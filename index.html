@@ -42,9 +42,11 @@ body { font-family: -apple-system, "Microsoft YaHei", sans-serif; background: #f
 .card .options label.s2 { border-color:#ff9800; } .card .options label.s2.selected { background:#fff3e0; }
 .card .options label.s3 { border-color:#f44336; } .card .options label.s3.selected { background:#ffebee; }
 .card .options label.s4 { border-color:#2196f3; } .card .options label.s4.selected { background:#e3f2fd; }
-.card .sysname { display:none; margin-left:8px; }
-.card .sysname.show { display:inline-flex; }
-.card .sysname input { padding:4px 8px; border:1px solid #ff9800; border-radius:4px; font-size:12px; width:160px; }
+.card .options label.s5 { border-color:#9e9e9e; } .card .options label.s5.selected { background:#f5f5f5; }
+.card .extra-fields { display:none; margin-left:8px; gap:6px; align-items:center; flex-wrap:wrap; }
+.card .extra-fields.show { display:inline-flex; }
+.card .extra-fields input { padding:4px 8px; border:1px solid #ff9800; border-radius:4px; font-size:12px; width:140px; }
+.card .extra-fields input.scode { width:100px; border-color:#9c27b0; }
 .empty { text-align:center; padding:60px 20px; color:#999; }
 #exportModal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.4); z-index:1000; justify-content:center; align-items:center; }
 #exportModal.show { display:flex; }
@@ -82,6 +84,7 @@ body { font-family: -apple-system, "Microsoft YaHei", sans-serif; background: #f
     <option value="2">已合作+系统名不同</option>
     <option value="3">已合作+未建档</option>
     <option value="4">未合作+已建档</option>
+    <option value="5">未合作+未建档</option>
     <option value="0">未确认</option>
   </select></label>
   <button class="btn btn-secondary" onclick="clearAll()">清空当前列表</button>
@@ -122,12 +125,12 @@ function getKey(distributor, shopName) {
 
 function getState(distributor, shopName) {
   const s = loadState();
-  return s[getKey(distributor, shopName)] || { status: 0, sysName: '' };
+  return s[getKey(distributor, shopName)] || { status: 0, sysName: '', sCode: '' };
 }
 
-function setState(distributor, shopName, status, sysName) {
+function setState(distributor, shopName, status, sysName, sCode) {
   const s = loadState();
-  s[getKey(distributor, shopName)] = { status, sysName: sysName || '' };
+  s[getKey(distributor, shopName)] = { status, sysName: sysName || '', sCode: sCode || '' };
   saveState(s);
 }
 
@@ -138,7 +141,7 @@ function render() {
 
   // Stats
   let total = shops.length;
-  let counts = {0:0,1:0,2:0,3:0,4:0};
+  let counts = {0:0,1:0,2:0,3:0,4:0,5:0};
   let areaMap = {};
   shops.forEach(s => {
     const k = getKey(distName, s.name);
@@ -157,6 +160,7 @@ function render() {
     <span class="stat-item"><span class="stat-dot" style="background:#ff9800"></span>已合作+名不同：<b>${counts[2]||0}</b></span>
     <span class="stat-item"><span class="stat-dot" style="background:#f44336"></span>已合作+未建档：<b>${counts[3]||0}</b></span>
     <span class="stat-item"><span class="stat-dot" style="background:#2196f3"></span>未合作+已建档：<b>${counts[4]||0}</b></span>
+    <span class="stat-item"><span class="stat-dot" style="background:#9e9e9e"></span>未合作+未建档：<b>${counts[5]||0}</b></span>
     <span class="stat-item">完成率：<b>${total?((total-(counts[0]||0))/total*100).toFixed(0):0}%</b></span>
   `;
 
@@ -199,18 +203,20 @@ function render() {
     const addr = s.addr || '';
     const tel = s.tel || '';
 
-    const statusLabels = ['未确认', '已合作+已建档', '已合作+名不同', '已合作+未建档', '未合作+已建档'];
-    const statusClasses = ['', 's1', 's2', 's3', 's4'];
+    const statusLabels = ['未确认', '已合作+已建档', '已合作+名不同', '已合作+未建档', '未合作+已建档', '未合作+未建档'];
+    const statusClasses = ['', 's1', 's2', 's3', 's4', 's5'];
 
     let options = '';
-    for (let i = 1; i <= 4; i++) {
+    for (let i = 1; i <= 5; i++) {
       const selected = st.status === i ? 'selected' : '';
       options += `<label class="${statusClasses[i-1]} ${selected}" onclick="setStatus('${distName}','${s.name.replace(/'/g,"\\'")}',${i})">
         <input type="radio" name="${k}" value="${i}" ${st.status===i?'checked':''}> ${statusLabels[i]}
       </label>`;
     }
 
-    const showSys = st.status === 2 ? 'show' : '';
+    const showExtra = st.status === 2 ? 'show' : '';
+    const sysNameVal = st.sysName || '';
+    const sCodeVal = st.sCode || '';
 
     return `<div class="card ${isNew?'new':''}">
       <div class="info">
@@ -219,8 +225,9 @@ function render() {
       </div>
       <div class="options">
         ${options}
-        <span class="sysname ${showSys}">
-          <input id="sysinput_${k.replace(/[^a-z0-9]/gi,'_')}" value="${st.sysName||''}" placeholder="输入系统内名称" onchange="setSysName('${distName}','${s.name.replace(/'/g,"\\'")}',this.value)">
+        <span class="extra-fields ${showExtra}">
+          <input value="${sysNameVal}" placeholder="系统内名称" onchange="setField('${distName}','${s.name.replace(/'/g,"\\'")}','sysName',this.value)">
+          <input class="scode" value="${sCodeVal}" placeholder="S编码" onchange="setField('${distName}','${s.name.replace(/'/g,"\\'")}','sCode',this.value)">
         </span>
       </div>
     </div>`;
@@ -229,12 +236,15 @@ function render() {
 
 function setStatus(dist, name, status) {
   const st = getState(dist, name);
-  setState(dist, name, status, st.sysName);
+  setState(dist, name, status, st.sysName, st.sCode);
   render();
 }
 
-function setSysName(dist, name, val) {
-  setState(dist, name, 2, val);
+function setField(dist, name, field, val) {
+  const st = getState(dist, name);
+  if (field === 'sysName') st.sysName = val;
+  else if (field === 'sCode') st.sCode = val;
+  setState(dist, name, st.status || 2, st.sysName, st.sCode);
 }
 
 function clearAll() {
@@ -250,7 +260,7 @@ function clearAll() {
 function showExport() {
   const s = loadState();
   let lines = [];
-  const statusMap = {0:'未确认',1:'已合作+已建档',2:'已合作+系统名不同',3:'已合作+未建档',4:'未合作+已建档'};
+  const statusMap = {0:'未确认',1:'已合作+已建档',2:'已合作+系统名不同',3:'已合作+未建档',4:'未合作+已建档',5:'未合作+未建档'};
   const dsrName = document.getElementById('dsrName').value || '(未填写)';
 
   lines.push(`填写人：${dsrName}`);
@@ -259,13 +269,13 @@ function showExport() {
 
   ['杭州至胜','浙江佳贝涵'].forEach(dist => {
     lines.push(`========== ${dist} ==========`);
-    lines.push('序号,门店名称,区域,地址,电话,状态,系统内名称');
+    lines.push('序号,门店名称,区域,地址,电话,状态,系统内名称,S编码');
     const shops = DATA[dist] || [];
     shops.forEach((shop, i) => {
       const k = getKey(dist, shop.name);
       const st = s[k] || {status:0};
       const area = shop.district || shop.city;
-      lines.push(`${i+1},${shop.name},${area},${shop.addr||''},${shop.tel||''},${statusMap[st.status]||'未确认'},${st.sysName||''}`);
+      lines.push(`${i+1},${shop.name},${area},${shop.addr||''},${shop.tel||''},${statusMap[st.status]||'未确认'},${st.sysName||''},${st.sCode||''}`);
     });
     lines.push('');
   });
@@ -294,7 +304,7 @@ function downloadTxt() {
 
 function exportExcel() {
   const s = loadState();
-  const statusMap = {0:'未确认',1:'已合作+已建档',2:'已合作+系统名不同',3:'已合作+未建档',4:'未合作+已建档'};
+  const statusMap = {0:'未确认',1:'已合作+已建档',2:'已合作+系统名不同',3:'已合作+未建档',4:'未合作+已建档',5:'未合作+未建档'};
   const dsrName = document.getElementById('dsrName').value || '(未填写)';
   let rows = [];
 
@@ -304,13 +314,13 @@ function exportExcel() {
       const k = getKey(dist, shop.name);
       const st = s[k] || {status:0};
       const area = shop.district || shop.city;
-      rows.push([dist, shop.name, area, shop.addr||'', shop.tel||'', statusMap[st.status], st.sysName||'']);
+      rows.push([dist, shop.name, area, shop.addr||'', shop.tel||'', statusMap[st.status], st.sysName||'', st.sCode||'']);
     });
   });
 
   // Build CSV
   let csv = '\uFEFF'; // BOM for Excel
-  csv += '经销商,门店名称,区域,地址,电话,确认状态,系统内名称\n';
+  csv += '经销商,门店名称,区域,地址,电话,确认状态,系统内名称,S编码\n';
   rows.forEach(r => csv += r.map(v => '"'+(v||'').replace(/"/g,'""')+'"').join(',') + '\n');
 
   const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
