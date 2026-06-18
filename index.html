@@ -214,7 +214,8 @@ function render() {
       </label>`;
     }
 
-    const showExtra = st.status === 2 ? 'show' : '';
+    const showExtra = st.status === 1 || st.status === 2 || st.status === 4 ? 'show' : '';
+    const showSysName = st.status === 2 ? true : false;
     const sysNameVal = st.sysName || '';
     const sCodeVal = st.sCode || '';
 
@@ -226,7 +227,7 @@ function render() {
       <div class="options">
         ${options}
         <span class="extra-fields ${showExtra}">
-          <input value="${sysNameVal}" placeholder="系统内名称" onchange="setField('${distName}','${s.name.replace(/'/g,"\\'")}','sysName',this.value)">
+          ${showSysName ? `<input value="${sysNameVal}" placeholder="系统内名称" onchange="setField('${distName}','${s.name.replace(/'/g,"\\'")}','sysName',this.value)">` : ''}
           <input class="scode" value="${sCodeVal}" placeholder="S编码" onchange="setField('${distName}','${s.name.replace(/'/g,"\\'")}','sCode',this.value)">
         </span>
       </div>
