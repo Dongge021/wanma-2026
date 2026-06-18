@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>万马奔腾 — 客户确认工具</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system, "Microsoft YaHei", sans-serif; background: #f5f6fa; color: #333; }
+.header { background: #1a1a2e; color: #fff; padding: 18px 24px; display:flex; justify-content:space-between; align-items:center; }
+.header h1 { font-size: 20px; }
+.header .sub { font-size: 13px; color: #aaa; }
+.tabs { display:flex; background: #16213e; padding: 0 24px; }
+.tab { padding: 12px 28px; cursor:pointer; color:#8a8fa8; font-size:14px; border-bottom:3px solid transparent; transition:all .2s; }
+.tab:hover { color:#fff; }
+.tab.active { color:#fff; border-bottom-color:#e94560; font-weight:600; }
+.toolbar { background:#fff; padding:14px 24px; display:flex; gap:12px; align-items:center; border-bottom:1px solid #e8e8e8; flex-wrap:wrap; }
+.toolbar label { font-size:13px; color:#666; }
+.toolbar select, .toolbar input { padding:6px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px; }
+.toolbar .btn { padding:7px 18px; border:none; border-radius:6px; cursor:pointer; font-size:13px; }
+.btn-primary { background:#e94560; color:#fff; }
+.btn-primary:hover { background:#d63850; }
+.btn-secondary { background:#eee; color:#333; }
+.btn-secondary:hover { background:#ddd; }
+.stats { background:#fff; padding:10px 24px; font-size:13px; color:#666; border-bottom:1px solid #e8e8e8; display:flex; gap:20px; flex-wrap:wrap; }
+.stat-item { display:flex; align-items:center; gap:4px; }
+.stat-dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+.list { padding:12px 24px; max-width:1400px; margin:0 auto; }
+.card { background:#fff; border-radius:8px; margin-bottom:8px; padding:12px 16px; display:flex; flex-wrap:wrap; align-items:center; gap:8px; box-shadow:0 1px 3px rgba(0,0,0,.06); transition:all .15s; }
+.card:hover { box-shadow:0 2px 8px rgba(0,0,0,.1); }
+.card.new { border-left:4px solid #ffc107; }
+.card .info { flex:1; min-width:200px; }
+.card .name { font-size:14px; font-weight:600; }
+.card .name .tag { font-size:11px; background:#e94560; color:#fff; padding:1px 6px; border-radius:3px; margin-left:6px; }
+.card .meta { font-size:12px; color:#888; margin-top:2px; }
+.card .options { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+.card .options label { display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer; padding:4px 10px; border-radius:4px; border:1px solid #e0e0e0; transition:all .15s; }
+.card .options label:hover { border-color:#aaa; }
+.card .options input[type="radio"] { accent-color:#e94560; }
+.card .options label.selected { border-color:#e94560; background:#fff5f5; }
+.card .options label.s1 { border-color:#4caf50; } .card .options label.s1.selected { background:#e8f5e9; }
+.card .options label.s2 { border-color:#ff9800; } .card .options label.s2.selected { background:#fff3e0; }
+.card .options label.s3 { border-color:#f44336; } .card .options label.s3.selected { background:#ffebee; }
+.card .options label.s4 { border-color:#2196f3; } .card .options label.s4.selected { background:#e3f2fd; }
+.card .sysname { display:none; margin-left:8px; }
+.card .sysname.show { display:inline-flex; }
+.card .sysname input { padding:4px 8px; border:1px solid #ff9800; border-radius:4px; font-size:12px; width:160px; }
+.empty { text-align:center; padding:60px 20px; color:#999; }
+#exportModal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.4); z-index:1000; justify-content:center; align-items:center; }
+#exportModal.show { display:flex; }
+.modal-box { background:#fff; border-radius:12px; padding:24px; max-width:600px; width:90%; max-height:80vh; overflow:auto; }
+.modal-box h3 { margin-bottom:12px; }
+.modal-box pre { background:#f5f5f5; padding:12px; border-radius:6px; font-size:12px; overflow:auto; max-height:300px; }
+.modal-box .btn-row { display:flex; gap:8px; justify-content:flex-end; margin-top:12px; }
+.footer { text-align:center; padding:24px; color:#aaa; font-size:12px; }
+@media(max-width:768px) { .card .options { width:100%; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>🐎 万马奔腾 · 客户确认</h1>
+    <div class="sub">DSR逐家确认合作/建档状态</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;font-size:13px;">
+    <span>填写人：</span>
+    <input id="dsrName" placeholder="输入姓名" style="padding:6px 12px;border:1px solid #555;border-radius:6px;background:#2a2a4e;color:#fff;font-size:13px;">
+  </div>
+</div>
+
+<div class="tabs" id="tabs">
+  <div class="tab active" data-tab="0">杭州至胜贸易有限公司 <span id="count0" style="font-size:12px;color:#8a8fa8;margin-left:4px;"></span></div>
+  <div class="tab" data-tab="1">浙江佳贝涵贸易有限公司 <span id="count1" style="font-size:12px;color:#8a8fa8;margin-left:4px;"></span></div>
+</div>
+
+<div class="toolbar">
+  <label>筛选区域：<select id="areaFilter"><option value="">全部区域</option></select></label>
+  <label>状态筛选：<select id="statusFilter">
+    <option value="">全部状态</option>
+    <option value="1">已合作+已建档</option>
+    <option value="2">已合作+系统名不同</option>
+    <option value="3">已合作+未建档</option>
+    <option value="4">未合作+已建档</option>
+    <option value="0">未确认</option>
+  </select></label>
+  <button class="btn btn-secondary" onclick="clearAll()">清空当前列表</button>
+  <button class="btn btn-primary" onclick="showExport()">📥 导出结果</button>
+  <button class="btn btn-secondary" onclick="exportExcel()">📊 导出Excel</button>
+</div>
+
+<div class="stats" id="statsBar"></div>
+
+<div class="list" id="list"></div>
+<div id="exportModal"><div class="modal-box" id="exportContent"></div></div>
+<div class="footer">数据保存在浏览器本地 localStorage，关闭页面不会丢失</div>
+
+<script>
+// ============== DATA ==============
+const RAW = {"杭州至胜": [{"name": "专修依维柯", "city": "杭州市", "district": "萧山区", "task": "BBA专修", "addr": "浙江省杭州市萧山区昌园路与通城路交叉口西南方向205米左右", "tel": ""}, {"name": "凯悦汽修宝马专修(途虎养车店)", "city": "杭州市", "district": "萧山区", "task": "宝马维修", "addr": "浙江省杭州市萧山区建设四路31号", "tel": "13735481899;15858282947"}, {"name": "广州连顺自动变速箱专修连锁(杭州萧山店)", "city": "杭州市", "district": "萧山区", "task": "BBA专修", "addr": "浙江省杭州市萧山区萧绍东路113-1号", "tel": "15990014592"}, {"name": "悦马·名车专修(二店)", "city": "杭州市", "district": "萧山区", "task": "BBA专修", "addr": "浙江省杭州市萧山区建设一路98号3幢-102", "tel": "15924111734"}, {"name": "智慧车库宝马专修·新能源升级改色改装", "city": "杭州市", "district": "萧山区", "task": "宝马维修", "addr": "浙江省杭州市萧山区宁围街道洵美汽车产业园1157号2号楼(虎哥商务车旁)", "tel": "17816619934"}, {"name": "杭州星德杭奔驰宝马奥迪路虎保时捷专修", "city": "杭州市", "district": "萧山区", "task": "宝马维修", "addr": "浙江省杭州市萧山区新塘街道东瑞四路智新塘文化创意园", "tel": "18257573028;0571-83525688;15858974821"}, {"name": "杭州星耀奔驰宝马维修中心", "city": "杭州市", "district": "萧山区", "task": "宝马维修", "addr": "浙江省杭州市萧山区蜀山街道吉利路8号(广汽丰田4S店背面)", "tel": "13588895495"}, {"name": "杭州联胜豪华车专修", "city": "杭州市", "district": "萧山区", "task": "BBA专修", "addr": "浙江省杭州市萧山区新辉路", "tel": "15868113658"}, {"name": "比亚迪营运车专修店(杭州利骏店)", "city": "杭州市", "district": "萧山区", "task": "BBA专修", "addr": "浙江省杭州市萧山区萧绍东路168号德泓物流园内北侧", "tel": "0571-83737683;18069404956"}, {"name": "格悦新能源专修连锁(杭州通和店)", "city": "杭州市", "district": "钱塘区", "task": "BBA专修", "addr": "浙江省杭州市钱塘区杭州经济技术开发区18号大街256号1幢2层", "tel": "18681509956"}, {"name": "专修传动轴大车四轮定位", "city": "绍兴市", "district": "越城区", "task": "BBA专修", "addr": "浙江省绍兴市越城区陶堰街道京岚线江南景园北侧约270米", "tel": "13735368172"}, {"name": "伟达汽修路虎专修", "city": "绍兴市", "district": "越城区", "task": "BBA专修", "addr": "浙江省绍兴市越城区皋埠街道吼山南路263_265号", "tel": "18857570640"}, {"name": "元捷自动变速箱维修", "city": "绍兴市", "district": "越城区", "task": "BBA专修", "addr": "浙江省绍兴市越城区陶堰街道政府东北(104国道)", "tel": "15105755787"}, {"name": "华胜奔驰宝马奥迪专修连锁(绍兴华胜店)", "city": "绍兴市", "district": "越城区", "task": "宝马汽修", "addr": "浙江省绍兴市越城区康宁路350-2号", "tel": "0575-85229111;18858558598"}, {"name": "奔驰宝马专修站", "city": "绍兴市", "district": "越城区", "task": "宝马汽修", "addr": "浙江省绍兴市越城区凤起路与朝皇路交叉口东南方向149米左右", "tel": ""}, {"name": "宝悦宝马专修", "city": "绍兴市", "district": "越城区", "task": "宝马汽修", "addr": "浙江省绍兴市越城区中兴大道辅路与百盛街交叉口正西方向307米左右", "tel": "0575-88130988;15088533676"}, {"name": "宝悦宝马维修", "city": "绍兴市", "district": "越城区", "task": "宝马维修", "addr": "浙江省绍兴市越城区中兴大道辅路与百盛街交叉口正西方向307米左右", "tel": "0575-88130988;15088533676"}, {"name": "小王重卡轻卡电路电喷专业维修", "city": "绍兴市", "district": "越城区", "task": "BBA专修", "addr": "浙江省绍兴市越城区海南路72号", "tel": "16657054605"}, {"name": "德奥名车专修", "city": "绍兴市", "district": "越城区", "task": "BBA专修", "addr": "浙江省绍兴市越城区庄头村公交站旁边粉红房子一楼", "tel": "0575-85664949"}, {"name": "德盛名车专业维修(袍江百盛街)", "city": "绍兴市", "district": "越城区", "task": "BBA专修", "addr": "浙江省绍兴市越城区斗门街道袍江百盛街27杠-12号二楼,三楼", "tel": "18069742830;18072270828"}, {"name": "捷德行保时捷专修", "city": "绍兴市", "district": "越城区", "task": "BBA专修", "addr": "浙江省绍兴市越城区斗门街道汤公路299号10-12间", "tel": "15925849659"}, {"name": "林特特斯拉专修连锁(绍兴袍江店)", "city": "绍兴市", "district": "越城区", "task": "BBA专修", "addr": "浙江省绍兴市越城区袍江汽车城桑港路350号-2", "tel": ""}, {"name": "沃能靓汽修·沃尔沃专修(精工汽车文化创意园)", "city": "绍兴市", "district": "越城区", "task": "BBA专修", "addr": "浙江省绍兴市越城区斗门街道汤公路20号精工二手车城G楼一层西区1-3", "tel": "13819521956"}, {"name": "绍兴世贸沃尔沃奥迪奔驰宝马路虎专修", "city": "绍兴市", "district": "越城区", "task": "宝马汽修", "addr": "浙江省绍兴市越城区斗门街道精工商贸城A馆1层A1-3-01", "tel": "13735346296"}, {"name": "绍兴伯骏汽车玛莎拉蒂阿尔法罗密欧专修", "city": "绍兴市", "district": "越城区", "task": "BBA专修", "addr": "浙江省绍兴市越城区斗门街道汤公路20号精工二手车城G楼一层西区57号", "tel": "13454588331"}, {"name": "绍兴佳程奔驰专修", "city": "绍兴市", "district": "越城区", "task": "BBA专修", "addr": "浙江省绍兴市越城区客运西站西侧绍兴鹏程机械厂一楼", "tel": "13454547710"}, {"name": "绍兴凌志汽车专修店", "city": "绍兴市", "district": "越城区", "task": "BBA专修", "addr": "浙江省绍兴市越城区东浦街道凤林西路2388号", "tel": ""}, {"name": "绍兴宝奕宝马俱乐部", "city": "绍兴市", "district": "越城区", "task": "宝马汽修", "addr": "浙江省绍兴市越城区群贤中路与汤公路交叉口恒申纸业内", "tel": "19888809910"}, {"name": "绍兴宝顺宝马", "city": "绍兴市", "district": "越城区", "task": "宝马汽修", "addr": "浙江省绍兴市越城区中兴大道与康宁路交叉口东北方向176米左右", "tel": ""}, {"name": "绍兴市越城区东方进口汽车修理厂", "city": "绍兴市", "district": "越城区", "task": "进口车维修", "addr": "浙江省绍兴市越城区城南街道城南劳家葑村1号", "tel": "0575-88364486"}, {"name": "绍兴泓星行奔驰专修服务有限公司", "city": "绍兴市", "district": "越城区", "task": "BBA专修", "addr": "浙江省绍兴市越城区中兴大道38号一楼108", "tel": "18967596318;0575-88165578"}, {"name": "绿毛龟新能源三电专修", "city": "绍兴市", "district": "越城区", "task": "BBA专修", "addr": "浙江省绍兴市越城区城南大道与树下王中路交叉口东南方向78米左右", "tel": ""}, {"name": "老徐名车专修", "city": "绍兴市", "district": "越城区", "task": "BBA专修", "addr": "浙江省绍兴市越城区世纪西街与汤公路交叉口东北方向256米左右", "tel": ""}, {"name": "远行汽车电子科技(新能源汽车 三电专修)", "city": "绍兴市", "district": "越城区", "task": "BBA专修", "addr": "浙江省绍兴市越城区寺东街天工华庭北门商铺81-82号", "tel": "19858555081"}, {"name": "鑫鑫大众奥迪专修", "city": "绍兴市", "district": "越城区", "task": "BBA专修", "addr": "浙江省绍兴市越城区北海街道霞西路运河人家霞川坊33号", "tel": "13757512215"}, {"name": "雷克萨斯丰田专修", "city": "绍兴市", "district": "越城区", "task": "BBA专修", "addr": "浙江省绍兴市越城区汤公路与世纪西街交叉口东北400米", "tel": ""}, {"name": "专修水箱油箱", "city": "绍兴市", "district": "柯桥区", "task": "BBA专修", "addr": "浙江省绍兴市柯桥区骏马检测站东院内钱陶东路", "tel": "13735303507"}, {"name": "专修电喷油泵油嘴尿素泵订做液压管批发润滑油", "city": "绍兴市", "district": "柯桥区", "task": "BBA专修", "addr": "浙江省绍兴市柯桥区齐陶路888号", "tel": "13606557158"}, {"name": "世奥联盟 柯桥诚奥奥迪专修", "city": "绍兴市", "district": "柯桥区", "task": "BBA专修", "addr": "浙江省绍兴市柯桥区安昌街道安华村3幢远大勤业产业园111号", "tel": "13216450612"}, {"name": "华胜奔驰宝马奥迪专修连锁(绍兴柯桥店)", "city": "绍兴市", "district": "柯桥区", "task": "宝马汽修", "addr": "浙江省绍兴市柯桥区鉴水路1308号", "tel": "15958525530"}, {"name": "博轩汽修", "city": "绍兴市", "district": "柯桥区", "task": "宝马汽修", "addr": "浙江省绍兴市柯桥区安昌街道安华村安华北路远勤产业园3幢1楼106-108号", "tel": "18657526366"}, {"name": "安顺汽车一站式服务中心(摩行科技新能源专修)", "city": "绍兴市", "district": "柯桥区", "task": "BBA专修", "addr": "浙江省绍兴市柯桥区安华北路与曙光路交叉口安顺汽修", "tel": "15068575288;13867579208"}, {"name": "小冯汽修气配(货车专业维修)", "city": "绍兴市", "district": "柯桥区", "task": "BBA专修", "addr": "浙江省绍兴市柯桥区兴滨路与迎海路交叉口西南方向228米左右", "tel": "13040177888"}, {"name": "小拇指汽车维修保养轮胎(安昌店)摩行科技新能源专修", "city": "绍兴市", "district": "柯桥区", "task": "BBA专修", "addr": "浙江省绍兴市柯桥区安昌街道安华路安昌大酒店南300米", "tel": "13626860975;0575-89875026"}, {"name": "平安大众奥迪斯柯达专修", "city": "绍兴市", "district": "柯桥区", "task": "BBA专修", "addr": "浙江省绍兴市柯桥区平水镇至味食品有限公司对面", "tel": "13867552128"}, {"name": "快捷汽修(摩行科技新能源专修)", "city": "绍兴市", "district": "柯桥区", "task": "BBA专修", "addr": "浙江省绍兴市柯桥区钱清街道钱安线", "tel": "15988263149"}, {"name": "星一驰奔驰专修", "city": "绍兴市", "district": "柯桥区", "task": "BBA专修", "addr": "浙江省绍兴市柯桥区柯北大道1578号", "tel": "18657710037"}, {"name": "柯桥进口汽车维修", "city": "绍兴市", "district": "柯桥区", "task": "进口车维修", "addr": "浙江省绍兴市柯桥区华舍街道群贤西路727号正柯纺织有限公司", "tel": "13336817752"}, {"name": "琪凯汽修(摩行科技新能源专修)", "city": "绍兴市", "district": "柯桥区", "task": "BBA专修", "addr": "浙江省绍兴市柯桥区遗风村", "tel": ""}, {"name": "益星汽车维修奔驰专修", "city": "绍兴市", "district": "柯桥区", "task": "BBA专修", "addr": "浙江省绍兴市柯桥区齐贤街道前进村195号", "tel": "13362527270"}, {"name": "科云汽车专业维修", "city": "绍兴市", "district": "柯桥区", "task": "BBA专修", "addr": "浙江省绍兴市柯桥区安昌街道慕尚家居东南门旁", "tel": "15068539511"}, {"name": "越盛轿修装潢部(摩行科技新能源专修)", "city": "绍兴市", "district": "柯桥区", "task": "BBA专修", "addr": "浙江省绍兴市柯桥区安昌街道海盐村停车场旁", "tel": "13867543487"}, {"name": "路虎宾利保时捷专修(下大线店)", "city": "绍兴市", "district": "柯桥区", "task": "BBA专修", "addr": "浙江省绍兴市柯桥区安昌街道东市105号", "tel": "18858526789"}, {"name": "轰星行博纳汽车服务中心·名车专修", "city": "绍兴市", "district": "柯桥区", "task": "BBA专修", "addr": "浙江省绍兴市柯桥区毕至大道", "tel": "18267513065"}, {"name": "鑫万祥(福顺大通专修中心)", "city": "绍兴市", "district": "柯桥区", "task": "BBA专修", "addr": "浙江省绍兴市柯桥区齐贤街道前进村一栋一楼北面第十一间", "tel": "18858570608"}, {"name": "阿刚车行专修电动车摩托车", "city": "绍兴市", "district": "柯桥区", "task": "BBA专修", "addr": "浙江省绍兴市柯桥区022乡道东40米", "tel": ""}, {"name": "鹏信轿修(摩行科技新能源专修)", "city": "绍兴市", "district": "柯桥区", "task": "BBA专修", "addr": "浙江省绍兴市柯桥区安昌街道安昌路28号中意纺织楼下", "tel": "13456570795"}, {"name": "黄毛专修柴油电喷油嘴电路电瓶后处理汽车配件", "city": "绍兴市", "district": "柯桥区", "task": "BBA专修", "addr": "浙江省绍兴市柯桥区马鞍街道宝善桥章村190号", "tel": "13065768639"}, {"name": "TBA特斯拉专修连锁上虞店", "city": "绍兴市", "district": "上虞区", "task": "BBA专修", "addr": "浙江省绍兴市上虞区曹娥街道聚英路237号", "tel": ""}, {"name": "上虞专修江铃汽车服务有限公司(加油站店)", "city": "绍兴市", "district": "上虞区", "task": "BBA专修", "addr": "浙江省绍兴市上虞区东关街道前村104国道北侧加油站西", "tel": "13456573353"}, {"name": "上虞新区汽修(德系新能源专修)", "city": "绍兴市", "district": "上虞区", "task": "德系专修", "addr": "浙江省绍兴市上虞区聚英路237号", "tel": "0575-81228288"}, {"name": "华胜奔驰宝马奥迪专修连锁(上虞华策店)", "city": "绍兴市", "district": "上虞区", "task": "宝马汽修", "addr": "浙江省绍兴市上虞区曹娥街道东山路15号(龙柏光伏内)", "tel": "0575-81281999;15968582333"}, {"name": "小李专修水箱油箱", "city": "绍兴市", "district": "上虞区", "task": "BBA专修", "addr": "浙江省绍兴市上虞区东关卫生院西20米", "tel": "13486590869"}, {"name": "锦成汽修新能源专修", "city": "绍兴市", "district": "上虞区", "task": "BBA专修", "addr": "浙江省绍兴市上虞区舜江西路113号", "tel": ""}, {"name": "专修剑杆电箱", "city": "绍兴市", "district": "诸暨市", "task": "BBA专修", "addr": "浙江省绍兴市诸暨市G235与应镇南路交叉口西南方向27米左右", "tel": "13819545758"}, {"name": "专修奔驰宝马", "city": "绍兴市", "district": "诸暨市", "task": "宝马汽修", "addr": "浙江省绍兴市诸暨市陶朱街道崇德路61号", "tel": "13967546672"}, {"name": "专修奥迪宝马奔驰", "city": "绍兴市", "district": "诸暨市", "task": "宝马汽修", "addr": "浙江省绍兴市诸暨市店口镇解放东路与雁南路交叉口东北20米", "tel": ""}, {"name": "专修汽车挖机水箱空调铝焊氩弧焊", "city": "绍兴市", "district": "诸暨市", "task": "BBA专修", "addr": "浙江省绍兴市诸暨市陶朱街道庙坞村96号", "tel": "13858511503"}, {"name": "众邦汽车专检专修", "city": "绍兴市", "district": "诸暨市", "task": "BBA专修", "addr": "浙江省绍兴市诸暨市王家湖东路与詹家山北路交叉口正西方向74米左右", "tel": "0575-87718077"}, {"name": "佰宏汽车服务有限公司专修江铃庆铃特顺", "city": "绍兴市", "district": "诸暨市", "task": "BBA专修", "addr": "浙江省绍兴市诸暨市友谊路116号-13", "tel": ""}, {"name": "俊哲上汽通用专修", "city": "绍兴市", "district": "诸暨市", "task": "BBA专修", "addr": "浙江省绍兴市诸暨市车城二路9栋160号", "tel": "18657521239"}, {"name": "华盛名车专修", "city": "绍兴市", "district": "诸暨市", "task": "BBA专修", "addr": "浙江省绍兴市诸暨市山下湖镇珍宝路5号3号楼第11室", "tel": "18888751081;15557526189"}, {"name": "华胜奔驰宝马奥迪专修连锁(诸暨华展店)", "city": "绍兴市", "district": "诸暨市", "task": "宝马汽修", "addr": "浙江省绍兴市诸暨市暨东路105号", "tel": "15088517867;0575-87358999"}, {"name": "华胜奔驰宝马奥迪专修连锁(诸暨店)", "city": "绍兴市", "district": "诸暨市", "task": "宝马汽修", "addr": "浙江省绍兴市诸暨市陶朱街道千禧路10号", "tel": ""}, {"name": "名车聚平行进口汽修", "city": "绍兴市", "district": "诸暨市", "task": "进口车维修", "addr": "浙江省绍兴市诸暨市店口镇金雁路128号", "tel": ""}, {"name": "大唐富垄名车专修", "city": "绍兴市", "district": "诸暨市", "task": "BBA专修", "addr": "浙江省绍兴市诸暨市大唐街道金龙东路66号", "tel": "13757558583"}, {"name": "奥迪专修(诸暨店)", "city": "绍兴市", "district": "诸暨市", "task": "BBA专修", "addr": "浙江省绍兴市诸暨市西二环路277号", "tel": "4008171666"}, {"name": "宝历行宝马维修中心", "city": "绍兴市", "district": "诸暨市", "task": "宝马维修", "addr": "浙江省绍兴市诸暨市大唐街道江北路158号", "tel": "18767159917"}, {"name": "宝历行汽修", "city": "绍兴市", "district": "诸暨市", "task": "宝马汽修", "addr": "浙江省绍兴市诸暨市大唐街道江北路158号", "tel": "18767159917"}, {"name": "小拜汽修汽配(专修大车)", "city": "绍兴市", "district": "诸暨市", "task": "BBA专修", "addr": "浙江省绍兴市诸暨市浣东街道双桥村芦溪自然村", "tel": ""}, {"name": "德奥·奥迪名车系列专修", "city": "绍兴市", "district": "诸暨市", "task": "BBA专修", "addr": "浙江省绍兴市诸暨市跨湖路46号", "tel": "0575-87276626;13806769233"}, {"name": "新里程自动变速箱专修", "city": "绍兴市", "district": "诸暨市", "task": "BBA专修", "addr": "浙江省绍兴市诸暨市陶朱街道恒龙国际汽配用品城4栋135-138号", "tel": "13071871915"}, {"name": "日产专业维修", "city": "绍兴市", "district": "诸暨市", "task": "BBA专修", "addr": "浙江省绍兴市诸暨市浣东街道幸福路25号", "tel": "13735310748"}, {"name": "星汇路捷奔驰路虎捷豹专修", "city": "绍兴市", "district": "诸暨市", "task": "BBA专修", "addr": "浙江省绍兴市诸暨市暨阳街道祥安路56-8-11号", "tel": ""}, {"name": "林特特斯拉专修连锁(诸暨千禧路店)", "city": "绍兴市", "district": "诸暨市", "task": "BBA专修", "addr": "浙江省绍兴市诸暨市千禧路10号", "tel": "18888758578"}, {"name": "林特特斯拉专修连锁诸暨城东店", "city": "绍兴市", "district": "诸暨市", "task": "BBA专修", "addr": "浙江省绍兴市诸暨市暨东路105号", "tel": "0575-87358999"}, {"name": "永诚汽车专业维修", "city": "绍兴市", "district": "诸暨市", "task": "BBA专修", "addr": "浙江省绍兴市诸暨市浣东街道幸福路2-3号", "tel": "13646751303"}, {"name": "汽车电路空调电瓶", "city": "绍兴市", "district": "诸暨市", "task": "BBA专修", "addr": "浙江省绍兴市诸暨市应店街镇G235", "tel": ""}, {"name": "淼师傅上汽通用系列专修", "city": "绍兴市", "district": "诸暨市", "task": "BBA专修", "addr": "浙江省绍兴市诸暨市陶朱街道新兴路新城幼儿园(新兴路)西侧约60米", "tel": "15968517585"}, {"name": "益和自动变速箱专修", "city": "绍兴市", "district": "诸暨市", "task": "BBA专修", "addr": "浙江省绍兴市诸暨市陶朱街道创业路3号", "tel": "18858591658"}, {"name": "美艺行奔驰宝马专修连锁", "city": "绍兴市", "district": "诸暨市", "task": "宝马汽修", "addr": "浙江省绍兴市诸暨市北二环路18号", "tel": "0575-89073886"}, {"name": "美艺行豪华车专修", "city": "绍兴市", "district": "诸暨市", "task": "BBA专修", "addr": "浙江省绍兴市诸暨市北二环路18号", "tel": "0575-89073886"}, {"name": "虎道捷豹路虎专修", "city": "绍兴市", "district": "诸暨市", "task": "BBA专修", "addr": "浙江省绍兴市诸暨市王家湖路恒龙国际汽配用品城", "tel": "18857580919"}, {"name": "诸暨建业自动变速箱专业维修", "city": "绍兴市", "district": "诸暨市", "task": "BBA专修", "addr": "浙江省绍兴市诸暨市大唐街道龙潭路389号汽车自动变速器维修变速箱保养减震器方向机维修", "tel": "15067527982"}, {"name": "诸暨捷豹路虎专业维修中心", "city": "绍兴市", "district": "诸暨市", "task": "BBA专修", "addr": "浙江省绍兴市诸暨市王家湖路17号", "tel": ""}, {"name": "诸暨智威货车电喷电路油泵油嘴专业维修", "city": "绍兴市", "district": "诸暨市", "task": "BBA专修", "addr": "浙江省绍兴市诸暨市三环线与城北路交叉口正西方向117米左右", "tel": "15068982112"}, {"name": "迅马名车专修", "city": "绍兴市", "district": "诸暨市", "task": "BBA专修", "addr": "浙江省绍兴市诸暨市暨阳街道艮塔东路385号(学府名苑西边店面)", "tel": "0575-87221080"}, {"name": "铂锐豪华车专修连锁", "city": "绍兴市", "district": "诸暨市", "task": "BBA专修", "addr": "浙江省绍兴市诸暨市暨阳街道环城东路5号", "tel": "13676876999"}, {"name": "锦星行·奔驰专修(鼎盛苑B区店)", "city": "绍兴市", "district": "诸暨市", "task": "BBA专修", "addr": "浙江省绍兴市诸暨市暨阳街道安康路16-11号", "tel": "13235719261;13375752886"}, {"name": "陈航锋自动变速箱专修", "city": "绍兴市", "district": "诸暨市", "task": "BBA专修", "addr": "浙江省绍兴市诸暨市陶朱街道恒龙汽配城6栋101馆", "tel": "17705757022"}, {"name": "专修水箱", "city": "绍兴市", "district": "嵊州市", "task": "BBA专修", "addr": "浙江省绍兴市嵊州市普发电器有限公司东北门北130米", "tel": ""}, {"name": "华胜奔驰宝马奥迪专修连锁(嵊州经开店)", "city": "绍兴市", "district": "嵊州市", "task": "宝马汽修", "addr": "浙江省绍兴市嵊州市兴盛街联通汽车城内(东风悦达起亚的后面)", "tel": ""}, {"name": "奔驰宝马奥迪水性漆专喷", "city": "绍兴市", "district": "嵊州市", "task": "宝马汽修", "addr": "浙江省绍兴市嵊州市经盛路雅士林雅园东北侧约30米", "tel": ""}, {"name": "奥宝马修理厂", "city": "绍兴市", "district": "嵊州市", "task": "宝马维修", "addr": "浙江省绍兴市嵊州市甘霖镇加油站旁", "tel": "13758547108"}, {"name": "奥宝马汽修(城南店)", "city": "绍兴市", "district": "嵊州市", "task": "宝马汽修", "addr": "浙江省绍兴市嵊州市兴盛街1520号", "tel": ""}, {"name": "奥宝马汽贸汽修", "city": "绍兴市", "district": "嵊州市", "task": "宝马汽修", "addr": "浙江省绍兴市嵊州市甘霖镇江夏小蛟线中石油加油站旁", "tel": "0575-83068298;13758547108"}, {"name": "奥宝马汽车维修", "city": "绍兴市", "district": "嵊州市", "task": "宝马汽修", "addr": "浙江省绍兴市嵊州市富乐路与振兴路交叉口正东方向160米左右", "tel": "0575-83068298;13758547108"}, {"name": "嵊州市传动轴方向机专修", "city": "绍兴市", "district": "嵊州市", "task": "BBA专修", "addr": "浙江省绍兴市嵊州市卡尔路与长宁路交叉口西北方向166米左右", "tel": "13758549451"}, {"name": "嵊州市进口汽车修理厂", "city": "绍兴市", "district": "嵊州市", "task": "进口车维修", "addr": "浙江省绍兴市嵊州市三江街道江二路与仙湖路交叉路口往南约100米", "tel": ""}, {"name": "星奔行奔驰专修", "city": "绍兴市", "district": "嵊州市", "task": "BBA专修", "addr": "浙江省绍兴市嵊州市嵊州大道与江二路交叉口正东方向112米左右", "tel": ""}, {"name": "电瓶车专修专卖", "city": "绍兴市", "district": "嵊州市", "task": "BBA专修", "addr": "浙江省绍兴市嵊州市三博路与浦寅路交叉口正东方向71米左右", "tel": ""}, {"name": "老崔专修水箱打黄油", "city": "绍兴市", "district": "嵊州市", "task": "BBA专修", "addr": "浙江省绍兴市嵊州市鹿山街道姚宅村73号F1", "tel": "13967508901"}, {"name": "连顺自动变速箱专修(嵊州店)", "city": "绍兴市", "district": "嵊州市", "task": "BBA专修", "addr": "浙江省绍兴市嵊州市嵊州大道500号", "tel": "15605758070"}, {"name": "锦铃汽修江铃专修", "city": "绍兴市", "district": "嵊州市", "task": "BBA专修", "addr": "浙江省绍兴市嵊州市鹿山街道演头村116号", "tel": "13697939631"}, {"name": "新嵊名车专修(大道中路店)", "city": "绍兴市", "district": "新昌县", "task": "BBA专修", "addr": "浙江省绍兴市新昌县七星街道大道中路248号", "tel": ""}, {"name": "新驰行奔驰专修中心", "city": "绍兴市", "district": "新昌县", "task": "BBA专修", "addr": "浙江省绍兴市新昌县七星街道新昌大道西路1023号", "tel": "15068552962"}, {"name": "华胜奔驰宝马奥迪专修连锁(杭州萧山店)", "city": "杭州市", "district": "萧山区", "task": "BBA专修", "addr": "萧山区海塘路537-3号", "tel": "400-8033-707"}, {"name": "杭州利骅汽车维修服务有限公司", "city": "杭州市", "district": "萧山区", "task": "BBA专修", "addr": "萧山区宁围街道鸿宁路345号", "tel": ""}, {"name": "杭州宝岳行汽车服务有限公司", "city": "杭州市", "district": "萧山区", "task": "BBA专修", "addr": "萧山区新街街道通城路598号吉诺粮仓艺术公园3幢104室", "tel": "15257117630"}, {"name": "杭州星宝行汽车服务有限公司", "city": "杭州市", "district": "萧山区", "task": "BBA专修", "addr": "萧山区建设一路188号", "tel": "0571-82225678"}, {"name": "杭州东现汽车维修有限公司", "city": "杭州市", "district": "钱塘区", "task": "BBA专修", "addr": "钱塘区新湾街道三新村", "tel": "15268126806"}, {"name": "杭州广聚汽车服务有限公司", "city": "杭州市", "district": "钱塘区", "task": "BBA专修", "addr": "钱塘区月雅路256-5号", "tel": "0571-86927008"}, {"name": "杭州志翔汽车修理有限公司", "city": "杭州市", "district": "钱塘区", "task": "BBA专修", "addr": "钱塘区新湾街道三新村", "tel": "13706500676"}, {"name": "杭州智勇汽车服务有限公司", "city": "杭州市", "district": "钱塘区", "task": "BBA专修", "addr": "钱塘区学源街1305号", "tel": "13958110716"}, {"name": "绍兴中德汽车维修有限公司", "city": "绍兴市", "district": "柯桥区", "task": "BBA专修", "addr": "柯桥区梅中路280号金成工业园", "tel": ""}, {"name": "绍兴奔德汽车维修有限公司", "city": "绍兴市", "district": "柯桥区", "task": "BBA专修", "addr": "柯桥区山阴西路58号", "tel": "0575-4889020"}, {"name": "绍兴新名达汽车维修有限公司", "city": "绍兴市", "district": "柯桥区", "task": "BBA专修", "addr": "柯桥区柯海公路东50米", "tel": "0575-5624949"}, {"name": "绍兴星德汽车维修有限公司", "city": "绍兴市", "district": "柯桥区", "task": "BBA专修", "addr": "柯桥区山阴西路116号", "tel": "0575-5681112"}, {"name": "绍兴柯桥佳顺汽车维修服务有限公司", "city": "绍兴市", "district": "柯桥区", "task": "BBA专修", "addr": "柯桥区钱清街道清风工业园", "tel": ""}, {"name": "华胜豪车专修连锁(诸暨华胜店)", "city": "绍兴市", "district": "诸暨市", "task": "BBA专修", "addr": "诸暨市千禧路10号", "tel": "0575-80700999"}], "浙江佳贝涵": [{"name": "宁波杰强德修汽车科技有限公司", "city": "宁波市", "district": "海曙区", "task": "BBA专修", "addr": "海曙区古林镇薛家村薛家南路南侧工业区", "tel": ""}, {"name": "宁波海曙宝盛汽车服务有限公司", "city": "宁波市", "district": "海曙区", "task": "宝马汽修", "addr": "海曙区环城西路南段756号（宁波轻纺城）", "tel": "13867868791"}, {"name": "华胜奔驰宝马奥迪专修连锁(宁波华赞店)", "city": "宁波市", "district": "鄞州区", "task": "宝马汽修", "addr": "鄞州区金辉西路123号", "tel": "400-8033-707"}, {"name": "奔驰宝马奥迪专修连锁(鄞州店)", "city": "宁波市", "district": "鄞州区", "task": "BBA专修", "addr": "鄞州区鄞县大道创新128西南侧约40米", "tel": ""}, {"name": "宁波奥德汽车服务有限公司", "city": "宁波市", "district": "鄞州区", "task": "宝马汽修", "addr": "宁波市通途路8号", "tel": "13867868791"}, {"name": "德通奔驰宝马保时捷奥迪专修连锁", "city": "宁波市", "district": "鄞州区", "task": "BBA专修", "addr": "鄞州区潘火街道富强路与下应北路交汇处", "tel": ""}, {"name": "慈溪市粤华汽车维修服务有限公司", "city": "宁波市", "district": "慈溪市", "task": "BBA专修", "addr": "慈溪市南二环东路1101号", "tel": "0574-63829555"}, {"name": "舟山市宏奥汽车维修服务有限公司", "city": "舟山市", "district": "定海区", "task": "BBA专修", "addr": "定海区惠飞路368号", "tel": "0580-884444"}, {"name": "舟山市新奥汽车维修服务有限公司", "city": "舟山市", "district": "定海区", "task": "BBA专修", "addr": "定海区临城黄土岭谢家28号", "tel": "0580-2263166"}, {"name": "舟山市远驰汽车维修有限公司", "city": "舟山市", "district": "定海区", "task": "BBA专修", "addr": "定海区金塘镇金港路1-12号", "tel": "15325808110"}, {"name": "宁波德宝汇奔驰宝马", "city": "宁波市", "district": "海曙区", "task": "宝马汽修", "addr": "浙江省宁波市海曙区鄞州大道99号众鄞汽配仓储中心613号", "tel": "13777085553;0574-87913498"}, {"name": "宁波景驰汽配有限公司(奔驰宝马)全车件", "city": "宁波市", "district": "海曙区", "task": "宝马汽修", "addr": "浙江省宁波市海曙区鄞州大道99号206号", "tel": ""}, {"name": "星恒奔驰宝马保时捷奥迪专修", "city": "宁波市", "district": "海曙区", "task": "宝马汽修", "addr": "浙江省宁波市海曙区久鑫针织", "tel": "13626847605"}, {"name": "锦奥汽车维修中心·大众奥迪保时捷奔驰宝马维修保养", "city": "宁波市", "district": "海曙区", "task": "宝马汽修", "addr": "浙江省宁波市海曙区集士港镇杨家村天一大楼118-122号", "tel": "13566621123"}, {"name": "华胜奔驰宝马奥迪专修连锁(鄞县店)", "city": "宁波市", "district": "鄞州区", "task": "宝马汽修", "addr": "浙江省宁波市鄞州区金辉西路亿天大厦北侧约170米", "tel": "17758200579;0574-55878666;0574-55680969"}, {"name": "宁波宝成专业宝马迷你车辆维修服务部", "city": "宁波市", "district": "鄞州区", "task": "宝马汽修", "addr": "浙江省宁波市鄞州区中河街道春光路1号宁波宝成", "tel": "15967685963"}, {"name": "宁波邦群宝马专修", "city": "宁波市", "district": "鄞州区", "task": "宝马汽修", "addr": "浙江省宁波市鄞州区嵩江东路617号", "tel": "13008944007;0574-83032116"}, {"name": "德通奔驰宝马保时捷路虎奥迪专修连锁(宝悦店)", "city": "宁波市", "district": "鄞州区", "task": "宝马汽修", "addr": "浙江省宁波市鄞州区潘火街道下应北路278号", "tel": "0574-88186111"}, {"name": "悦尚宝马升级改装", "city": "宁波市", "district": "鄞州区", "task": "宝马汽修", "addr": "浙江省宁波市鄞州区甬江大道波波城北门2024号", "tel": "15958827299"}, {"name": "技世奔驰奥迪宝马专修", "city": "宁波市", "district": "鄞州区", "task": "宝马汽修", "addr": "浙江省宁波市鄞州区四明西路507号", "tel": "13685828618"}, {"name": "捷驰Mercedes-Benz BMW专修", "city": "宁波市", "district": "鄞州区", "task": "宝马汽修", "addr": "浙江省宁波市鄞州区金色珑庭东(嵩江东路北)", "tel": "13586539437"}, {"name": "通达专修奔驰宝马奥迪", "city": "宁波市", "district": "鄞州区", "task": "宝马汽修", "addr": "浙江省宁波市鄞州区金辉东路18号1号门", "tel": ""}, {"name": "华胜奔驰宝马奥迪专修连锁(宁波江北店)", "city": "宁波市", "district": "江北区", "task": "宝马汽修", "addr": "浙江省宁波市江北区甬江街道中官新路555号华东汽车广场极狐汽车", "tel": "17758200593"}, {"name": "宁波车知道汽车维修服务中心", "city": "宁波市", "district": "江北区", "task": "宝马汽修", "addr": "浙江省宁波市江北区宝马街103号", "tel": ""}, {"name": "安北汽修(宝马街)", "city": "宁波市", "district": "江北区", "task": "宝马汽修", "addr": "浙江省宁波市江北区甬江街道宝马街66号041幢103、104", "tel": "15867339091"}, {"name": "华胜奔驰宝马奥迪专修连锁(余姚华奔店)", "city": "宁波市", "district": "余姚市", "task": "宝马汽修", "addr": "浙江省宁波市余姚市西环南路527号(梁周线)", "tel": "4008033707"}, {"name": "奔驰宝马奥迪专修", "city": "宁波市", "district": "余姚市", "task": "宝马汽修", "addr": "浙江省宁波市余姚市新桥浦路与钟山东路交叉口东北方向34米左右", "tel": ""}, {"name": "奔驰宝马奥迪汽修", "city": "宁波市", "district": "余姚市", "task": "宝马汽修", "addr": "浙江省宁波市余姚市凤山街道子陵路辅路与穴湖路交叉口东南160米", "tel": ""}, {"name": "恒驰宝马专修", "city": "宁波市", "district": "余姚市", "task": "宝马汽修", "addr": "浙江省宁波市余姚市飞达广告制作有限公司(子陵路北)", "tel": "18768500051"}, {"name": "星虹·奔驰宝马专修", "city": "宁波市", "district": "余姚市", "task": "宝马汽修", "addr": "浙江省宁波市余姚市四明东路122号", "tel": "0574-62521880;0574-62521881;15888140802"}, {"name": "华胜奔驰宝马奥迪专修连锁(慈溪华奔店)", "city": "宁波市", "district": "慈溪市", "task": "宝马汽修", "addr": "浙江省宁波市慈溪市横河镇洋山岗村南三环特种铸造有限公司", "tel": "0574-58587788"}, {"name": "安华宝马专修", "city": "宁波市", "district": "慈溪市", "task": "宝马汽修", "addr": "浙江省宁波市慈溪市浒山街道西二环南路218号", "tel": "16605747474;15967894758"}, {"name": "宝意汽修", "city": "宁波市", "district": "慈溪市", "task": "宝马汽修", "addr": "浙江省宁波市慈溪市观海卫镇师宓路105号", "tel": "18368482574"}, {"name": "慈溪宝创宝马专修", "city": "宁波市", "district": "慈溪市", "task": "宝马汽修", "addr": "浙江省宁波市慈溪市浒山街道融创江岸臻园834-840号", "tel": "13429339382;15267808770"}, {"name": "慈溪宝威宝马维修中心(逍林店)", "city": "宁波市", "district": "慈溪市", "task": "宝马汽修", "addr": "浙江省宁波市慈溪市逍林镇逍林大道380号", "tel": "13567412149"}, {"name": "慈溪鹏鑫汽配(奔驰.宝马配件.路虎全车件.雨刮器.刹车片)", "city": "宁波市", "district": "慈溪市", "task": "宝马汽修", "addr": "浙江省宁波市慈溪市宗汉街道北二环西路398号", "tel": "0574-63011917;15988688286"}, {"name": "华胜奔驰宝马奥迪专修连锁(宁海华速店)", "city": "宁波市", "district": "宁海县", "task": "宝马汽修", "addr": "浙江省宁波市宁海县宁海县汽车生活广场小区(新车管所对面)", "tel": "4008033707"}, {"name": "久尚汽车服务", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区临城街道桃湾路20-1", "tel": "17826991693"}, {"name": "乾坤汽车维修养护中心(盐仓店)", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区盐仓街道兴舟大道298号", "tel": "13566587692"}, {"name": "友嘉汽车美容装饰", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区盐仓街道兴舟大道555号一楼西起第一至三间", "tel": "18368053988"}, {"name": "合诚汽修", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区临城街道弘生大道258号南面(黎明路2号)", "tel": ""}, {"name": "嘉实多舟山市定海区欣飞汽车维修中心", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区弘生大道455-1号", "tel": "0580-2682113;13867229191"}, {"name": "壳牌喜力(车粒方汽车快修)", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区千岛街道千岛路168弄4号", "tel": "15957064557"}, {"name": "定海宏九汽车修理有限公司", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区海富外塘88号", "tel": "0580-8806060"}, {"name": "宝格汽修服务(舟山宝马专修店)", "city": "舟山市", "district": "定海区", "task": "宝马维修", "addr": "浙江省舟山市定海区千岛街道富丽岛路29-31号", "tel": "15505807676"}, {"name": "小徐汽车轮胎维修店", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区册子岛桃夭门长湾13号", "tel": "13205800271"}, {"name": "德国马牌和兴汽车美容(兴舟大道店)", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区盐仓街道兴舟大道73号D区一楼", "tel": "15168079765"}, {"name": "新奥名车奔驰宝马奥迪保时捷专修连锁", "city": "舟山市", "district": "定海区", "task": "宝马维修", "addr": "浙江省舟山市定海区临城街道黄土岭谢家28号", "tel": "0580-2265680;0580-2612222"}, {"name": "旭驰名车专修", "city": "舟山市", "district": "定海区", "task": "德系专修", "addr": "浙江省舟山市定海区中浪国际B座千岛路248号", "tel": ""}, {"name": "旭驰名车专修服务有限公司", "city": "舟山市", "district": "定海区", "task": "德系专修", "addr": "浙江省舟山市定海区兴舟大道475号", "tel": "0580-8808006"}, {"name": "明日之星汽车维修", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区尚品街大成四路22号", "tel": "17357491397"}, {"name": "星航汽车一站式服务", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区千岛街道绿岛路辅路78-4-5", "tel": "15858085255"}, {"name": "杨波汽车服务", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区东山路110号", "tel": "13136290666"}, {"name": "正鑫汽车维修中心", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区白泉镇瑞金路2022号", "tel": "13221730604"}, {"name": "汽管严汽车生活馆(临城店)", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区大宗商品交易市场地下车库", "tel": "13705805595"}, {"name": "汽车凹陷修复玻璃修复", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区盐仓舟山金门商务宾馆(兴舟大道)", "tel": "13095800023"}, {"name": "浙江地势坤汽车修理有限公司", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区小沙街道定海工业园区源丰路11号A区厂房六", "tel": "15314433386"}, {"name": "润风汽车服务", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区千岛街道海天大道1188号科来华建材家居广场2幢112、113号", "tel": ""}, {"name": "爱车管家汽车维修中心", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区弘生大道268号", "tel": "0580-8220999"}, {"name": "现代专修", "city": "舟山市", "district": "定海区", "task": "德系专修", "addr": "浙江省舟山市定海区临城街道汉庭酒店左边", "tel": "13615809930"}, {"name": "美孚1号车养护(晓刘汽车快修店)", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区弘生世纪城(横河路南)", "tel": "13335809058"}, {"name": "舟山佳艺汽车音响导航改装维修店", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区临城街道浙大路下邱家2号", "tel": "0580-2615458"}, {"name": "舟山兄弟汽车销售有限公司", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区弘生大道258号北面厂房", "tel": "19844244444"}, {"name": "舟山合欣汽修有限公司", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区东六线与东大线交叉口正东方向367米左右", "tel": "18958375913;18367453839"}, {"name": "舟山宏盈汽车服务有限公司", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区万毛线与毛北线交叉口西北方向137米左右", "tel": "18067686279"}, {"name": "舟山定海昌弘汽车修理厂", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区弘生大道457号1号车间", "tel": ""}, {"name": "舟山定海韵达汽车维修有限公司", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区马岙街道", "tel": "0580-2046941"}, {"name": "舟山市万顺汽车维修有限公司", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区盐仓街道昌洲社区大井头路69号B区", "tel": "18967218936"}, {"name": "舟山市新城博驰汽车维修服务中心", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区临城街道兴海路116号", "tel": "18605805634"}, {"name": "舟山市新城舟车汇汽车维修服务部", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区临城街道定沈路217-223号", "tel": "17367008650"}, {"name": "舟山市新城顺利汽修", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区展兴钢铁市场(沙钢螺纹专卖)北50米", "tel": "13957210531"}, {"name": "舟山市新城驰诚汽车修理厂", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区临城街道兴国路70号", "tel": "13857222798"}, {"name": "舟山市新泰汽车维修有限公司", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区甬和路126号(畚金制衣厂西侧原华顺电子厂)", "tel": "0580-2030620;13705808702"}, {"name": "舟山市金塘骏腾汽车维修服务中心(和建路)", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区金塘镇和建路115-1号", "tel": "13505806115"}, {"name": "舟山旭驰汽车维修", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区中浪国际B座千岛路248号", "tel": ""}, {"name": "舟山润达汽车维修有限公司", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区盐仓街道金达路15号", "tel": "13758009290;13884300123"}, {"name": "舟山腾骅汽车修理服务部(专修自动变速箱)", "city": "舟山市", "district": "定海区", "task": "德系专修", "addr": "浙江省舟山市定海区兴岛路57号", "tel": "18658021670"}, {"name": "舟山远驰汽修", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区荷花浦路1号", "tel": "15325808110"}, {"name": "超旺汽车维修服务站", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区盐仓街道兴舟大道113号", "tel": "0580-2929100;18268700046"}, {"name": "路易行汽车服务", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区盐仓街道兴舟大道427号", "tel": ""}, {"name": "车之驿汽车维修改装保养钣金喷漆", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区海院路25号", "tel": "13355807220"}, {"name": "车匠一体式汽车美容工坊", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区绿城·玫瑰园(文化路)109-27号", "tel": "13735022331"}, {"name": "车盈门汽车会所(金岛路店)", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区临城街道金岛路456号", "tel": "15070077549;18969221056"}, {"name": "车鲁班汽车养护", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区千岛路187号", "tel": "13116806284"}, {"name": "阿轩汽车快修部", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区白泉镇S231(车站北路)", "tel": "18969213668"}, {"name": "鸿海汽车美容", "city": "舟山市", "district": "定海区", "task": "进口车维修", "addr": "浙江省舟山市定海区蔬菜批发交易市场南(新桥路)", "tel": "15088877551"}, {"name": "7KM潮流养车(海丝未来店)", "city": "舟山市", "district": "普陀区", "task": "进口车维修", "addr": "浙江省舟山市普陀区沈家门街道海丝路28号海丝未来城21幢2号", "tel": "15088888585"}, {"name": "佑凡汽车一站式服务", "city": "舟山市", "district": "普陀区", "task": "进口车维修", "addr": "浙江省舟山市普陀区东港街道方树街141、143号", "tel": "15168072714"}, {"name": "小二汽车维修店", "city": "舟山市", "district": "普陀区", "task": "进口车维修", "addr": "浙江省舟山市普陀区沈家门街道鲁川路212号", "tel": "13665816573"}, {"name": "广艺汽车养护美容会所", "city": "舟山市", "district": "普陀区", "task": "进口车维修", "addr": "浙江省舟山市普陀区六横镇东靖路126号六横公路养护站对面", "tel": "18857087571"}, {"name": "承鑫汽车服务部(舟山宝马专修店)", "city": "舟山市", "district": "普陀区", "task": "宝马维修", "addr": "浙江省舟山市普陀区东港街道望湖街52号、东港游乐园地下停车场(青少年宫对面地下车库)", "tel": "13665815630"}, {"name": "新城车饰(海莲路店)", "city": "舟山市", "district": "普陀区", "task": "进口车维修", "addr": "浙江省舟山市普陀区东港街道海莲路482-488号", "tel": "13506806567"}, {"name": "普陀区李帅汽修", "city": "舟山市", "district": "普陀区", "task": "进口车维修", "addr": "浙江省舟山市普陀区沈家门街道水产舟渔物业公司东北门旁", "tel": "15325105294"}, {"name": "景翔汽车服务中心", "city": "舟山市", "district": "普陀区", "task": "进口车维修", "addr": "浙江省舟山市普陀区东港街道文康街30-34号", "tel": "18658059099"}, {"name": "欣池汽车服务站", "city": "舟山市", "district": "普陀区", "task": "进口车维修", "addr": "浙江省舟山市普陀区东港街道海印路877号", "tel": "17705803389"}, {"name": "泓宇汽车美容修理.奔驰专修", "city": "舟山市", "district": "普陀区", "task": "德系专修", "addr": "浙江省舟山市普陀区沈家门街道滨港西路106-108号", "tel": "0580-3800233"}, {"name": "老金汽车快修(原创达快修有车生活)(维修补胎换胎钣金喷漆)", "city": "舟山市", "district": "普陀区", "task": "进口车维修", "addr": "浙江省舟山市普陀区金城街266,268,270,272,274,276号", "tel": ""}, {"name": "舟山市普陀永兴汽车修配厂", "city": "舟山市", "district": "普陀区", "task": "进口车维修", "addr": "浙江省舟山市普陀区柏润路1号(海洋生物工业园区)", "tel": "0580-3695842"}, {"name": "阿杜汽车维修", "city": "舟山市", "district": "普陀区", "task": "进口车维修", "addr": "浙江省舟山市普陀区沈家门街道船厂路158号", "tel": "15958082928"}, {"name": "专修铲车", "city": "舟山市", "district": "岱山县", "task": "德系专修", "addr": "浙江省舟山市岱山县沿港西路与滨港路交叉口正西方向132米左右", "tel": ""}, {"name": "岱山安风汽车修理厂", "city": "舟山市", "district": "岱山县", "task": "进口车维修", "addr": "浙江省舟山市岱山县高亭镇徐福大道210号", "tel": "13705807665"}, {"name": "汽车电瓶马达空调发电机", "city": "舟山市", "district": "岱山县", "task": "进口车维修", "addr": "浙江省舟山市岱山县高亭镇沿港西路366一7号(磨心谷景区对面)", "tel": "15958067308"}, {"name": "车敏靓汽车维修美容服务中心", "city": "舟山市", "district": "岱山县", "task": "进口车维修", "addr": "浙江省舟山市岱山县兰秀大道307号", "tel": "13655803377"}], "updated": "2026-06-18"};
+</script>
+<script>
+// Load data from JSON
+
+
+const DATA = RAW;
+let currentTab = 0;
+
+// Load saved state from localStorage
+const STORAGE_KEY = 'wanma_confirm';
+
+function loadState() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch(e) { return {}; }
+}
+function saveState(state) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function getKey(distributor, shopName) {
+  return distributor + '::' + shopName;
+}
+
+function getState(distributor, shopName) {
+  const s = loadState();
+  return s[getKey(distributor, shopName)] || { status: 0, sysName: '' };
+}
+
+function setState(distributor, shopName, status, sysName) {
+  const s = loadState();
+  s[getKey(distributor, shopName)] = { status, sysName: sysName || '' };
+  saveState(s);
+}
+
+function render() {
+  const distName = ['杭州至胜', '浙江佳贝涵'][currentTab];
+  const shops = DATA[distName] || [];
+  const state = loadState();
+
+  // Stats
+  let total = shops.length;
+  let counts = {0:0,1:0,2:0,3:0,4:0};
+  let areaMap = {};
+  shops.forEach(s => {
+    const k = getKey(distName, s.name);
+    const st = state[k] || {status:0};
+    counts[st.status] = (counts[st.status]||0)+1;
+    const area = s.district || s.city;
+    if (!areaMap[area]) areaMap[area] = [];
+    areaMap[area].push(s);
+  });
+
+  // Stats bar
+  document.getElementById('statsBar').innerHTML = `
+    <span class="stat-item">总客户：<b>${total}</b></span>
+    <span class="stat-item"><span class="stat-dot" style="background:#9e9e9e"></span>未确认：<b>${counts[0]||0}</b></span>
+    <span class="stat-item"><span class="stat-dot" style="background:#4caf50"></span>已合作+已建档：<b>${counts[1]||0}</b></span>
+    <span class="stat-item"><span class="stat-dot" style="background:#ff9800"></span>已合作+名不同：<b>${counts[2]||0}</b></span>
+    <span class="stat-item"><span class="stat-dot" style="background:#f44336"></span>已合作+未建档：<b>${counts[3]||0}</b></span>
+    <span class="stat-item"><span class="stat-dot" style="background:#2196f3"></span>未合作+已建档：<b>${counts[4]||0}</b></span>
+    <span class="stat-item">完成率：<b>${total?((total-(counts[0]||0))/total*100).toFixed(0):0}%</b></span>
+  `;
+
+  // Area filter dropdown
+  const areaSel = document.getElementById('areaFilter');
+  const currentArea = areaSel.value;
+  const areas = Object.keys(areaMap).sort();
+  areaSel.innerHTML = '<option value="">全部区域</option>' + areas.map(a =>
+    `<option value="${a}" ${a===currentArea?'selected':''}>${a} (${areaMap[a].length})</option>`
+  ).join('');
+
+  const statusFilter = document.getElementById('statusFilter').value;
+  const list = document.getElementById('list');
+
+  let filtered = [...shops];
+  if (currentArea) filtered = filtered.filter(s => (s.district||s.city) === currentArea);
+  if (statusFilter !== '') {
+    filtered = filtered.filter(s => {
+      const st = state[getKey(distName, s.name)] || {status:0};
+      return st.status === parseInt(statusFilter);
+    });
+  }
+
+  if (filtered.length === 0) {
+    list.innerHTML = '<div class="empty">没有匹配的门店</div>';
+    return;
+  }
+
+  // Count new shops
+  let newCount = 0;
+  filtered.forEach(s => {
+    if (s.note && s.note.includes('新增')) newCount++;
+  });
+
+  list.innerHTML = filtered.map(s => {
+    const k = getKey(distName, s.name);
+    const st = state[k] || {status: 0, sysName: ''};
+    const isNew = s.note && s.note.includes('新增');
+    const area = s.district || s.city;
+    const addr = s.addr || '';
+    const tel = s.tel || '';
+
+    const statusLabels = ['未确认', '已合作+已建档', '已合作+名不同', '已合作+未建档', '未合作+已建档'];
+    const statusClasses = ['', 's1', 's2', 's3', 's4'];
+
+    let options = '';
+    for (let i = 1; i <= 4; i++) {
+      const selected = st.status === i ? 'selected' : '';
+      options += `<label class="${statusClasses[i-1]} ${selected}" onclick="setStatus('${distName}','${s.name.replace(/'/g,"\\'")}',${i})">
+        <input type="radio" name="${k}" value="${i}" ${st.status===i?'checked':''}> ${statusLabels[i]}
+      </label>`;
+    }
+
+    const showSys = st.status === 2 ? 'show' : '';
+
+    return `<div class="card ${isNew?'new':''}">
+      <div class="info">
+        <div class="name">${s.name}${isNew?'<span class="tag">新增</span>':''}</div>
+        <div class="meta">${area}${addr?' | '+addr:''}${tel?' | '+tel:''}</div>
+      </div>
+      <div class="options">
+        ${options}
+        <span class="sysname ${showSys}">
+          <input id="sysinput_${k.replace(/[^a-z0-9]/gi,'_')}" value="${st.sysName||''}" placeholder="输入系统内名称" onchange="setSysName('${distName}','${s.name.replace(/'/g,"\\'")}',this.value)">
+        </span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setStatus(dist, name, status) {
+  const st = getState(dist, name);
+  setState(dist, name, status, st.sysName);
+  render();
+}
+
+function setSysName(dist, name, val) {
+  setState(dist, name, 2, val);
+}
+
+function clearAll() {
+  const distName = ['杭州至胜', '浙江佳贝涵'][currentTab];
+  if (!confirm(`确定清空${distName}当前列表的所有确认状态？`)) return;
+  const shops = DATA[distName] || [];
+  const s = loadState();
+  shops.forEach(shop => { delete s[getKey(distName, shop.name)]; });
+  saveState(s);
+  render();
+}
+
+function showExport() {
+  const s = loadState();
+  let lines = [];
+  const statusMap = {0:'未确认',1:'已合作+已建档',2:'已合作+系统名不同',3:'已合作+未建档',4:'未合作+已建档'};
+  const dsrName = document.getElementById('dsrName').value || '(未填写)';
+
+  lines.push(`填写人：${dsrName}`);
+  lines.push(`导出时间：${new Date().toLocaleString()}`);
+  lines.push('');
+
+  ['杭州至胜','浙江佳贝涵'].forEach(dist => {
+    lines.push(`========== ${dist} ==========`);
+    lines.push('序号,门店名称,区域,地址,电话,状态,系统内名称');
+    const shops = DATA[dist] || [];
+    shops.forEach((shop, i) => {
+      const k = getKey(dist, shop.name);
+      const st = s[k] || {status:0};
+      const area = shop.district || shop.city;
+      lines.push(`${i+1},${shop.name},${area},${shop.addr||''},${shop.tel||''},${statusMap[st.status]||'未确认'},${st.sysName||''}`);
+    });
+    lines.push('');
+  });
+
+  const text = lines.join('\n');
+  document.getElementById('exportContent').innerHTML = `
+    <h3>📋 导出结果</h3>
+    <p style="font-size:13px;color:#666;margin-bottom:12px;">复制下方文本到Excel（CSV格式），或点击按钮下载文件。</p>
+    <pre>${text}</pre>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="downloadTxt()">📥 下载TXT</button>
+      <button class="btn btn-primary" onclick="document.getElementById('exportModal').classList.remove('show')">关闭</button>
+    </div>
+  `;
+  window._exportText = text;
+  document.getElementById('exportModal').classList.add('show');
+}
+
+function downloadTxt() {
+  const blob = new Blob([window._exportText], {type:'text/plain;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `万马奔腾_客户确认_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+function exportExcel() {
+  const s = loadState();
+  const statusMap = {0:'未确认',1:'已合作+已建档',2:'已合作+系统名不同',3:'已合作+未建档',4:'未合作+已建档'};
+  const dsrName = document.getElementById('dsrName').value || '(未填写)';
+  let rows = [];
+
+  ['杭州至胜','浙江佳贝涵'].forEach(dist => {
+    const shops = DATA[dist] || [];
+    shops.forEach((shop, i) => {
+      const k = getKey(dist, shop.name);
+      const st = s[k] || {status:0};
+      const area = shop.district || shop.city;
+      rows.push([dist, shop.name, area, shop.addr||'', shop.tel||'', statusMap[st.status], st.sysName||'']);
+    });
+  });
+
+  // Build CSV
+  let csv = '\uFEFF'; // BOM for Excel
+  csv += '经销商,门店名称,区域,地址,电话,确认状态,系统内名称\n';
+  rows.forEach(r => csv += r.map(v => '"'+(v||'').replace(/"/g,'""')+'"').join(',') + '\n');
+
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `万马奔腾_确认结果_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+// Tab switching
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    this.classList.add('active');
+    currentTab = parseInt(this.dataset.tab);
+    render();
+  });
+});
+
+document.getElementById('areaFilter').addEventListener('change', render);
+document.getElementById('statusFilter').addEventListener('change', render);
+
+// Initial render
+render();
+</script>
+</body>
+</html>
