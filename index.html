@@ -90,8 +90,8 @@ body { font-family: -apple-system, "Microsoft YaHei", sans-serif; background: #f
     <option value="0">未确认</option>
   </select></label>
   <button class="btn btn-secondary" onclick="clearAll()">清空当前列表</button>
-  <button class="btn btn-primary" onclick="showExport()">📥 导出结果</button>
-  <button class="btn btn-secondary" onclick="exportExcel()">📊 导出Excel</button>
+  <button class="btn btn-primary" onclick="submitToAdmin()">提交给管理员</button>
+  <button class="btn btn-secondary" onclick="showImport()">导入DSR数据</button>
 </div>
 
 <div class="stats" id="statsBar"></div>
@@ -346,6 +346,84 @@ document.querySelectorAll('.tab').forEach(tab => {
 
 document.getElementById('areaFilter').addEventListener('change', render);
 document.getElementById('statusFilter').addEventListener('change', render);
+
+// Submit & Import
+function submitToAdmin() {
+  const dsrName = document.getElementById('dsrName').value;
+  if (!dsrName) { alert('请先在顶部填写姓名'); return; }
+  const s = loadState();
+  const distName = ['杭州至胜', '浙江佳贝涵'][currentTab];
+  const shops = DATA[distName] || [];
+  const statusMap = {1:'已合作+已建档',2:'已合作+名不同',3:'已合作+未建档',4:'未合作+已建档',5:'未合作+未建档',6:'该店不存在'};
+  let rows = [];
+  shops.forEach(shop => {
+    const k = getKey(distName, shop.name);
+    const st = s[k] || {status:0};
+    if (st.status === 0) return;
+    rows.push({name:shop.name,area:shop.district||shop.city,addr:shop.addr||'',tel:shop.tel||'',
+      statusText:statusMap[st.status]||'未确认',sysName:st.sysName||'',sCode:st.sCode||''});
+  });
+  if (rows.length === 0) { alert('还没有确认任何门店'); return; }
+  let text = '===== 万马奔腾提交 =====\n';
+  text += '填写人：' + dsrName + '\n经销商：' + distName + '\n';
+  text += '确认时间：' + new Date().toLocaleString() + '\n';
+  text += '确认数：' + rows.length + '/' + shops.length + '\n\n';
+  text += '门店名称\t状态\t系统内名称\tS编码\n';
+  rows.forEach(r => {
+    text += r.name + '\t' + r.statusText + '\t' + (r.sysName||'-') + '\t' + (r.sCode||'-') + '\n';
+  });
+  text += '===== 结束 =====';
+  navigator.clipboard.writeText(text).then(() => {
+    alert('已复制！请粘贴到微信群发给管理员。');
+  }).catch(() => {
+    prompt('请复制以下内容发给管理员：', text);
+  });
+}
+
+function showImport() {
+  const m = document.getElementById('exportModal');
+  m.classList.add('show');
+  document.getElementById('exportContent').innerHTML =
+    '<h3>导入DSR数据</h3>' +
+    '<p style="font-size:13px;color:#666;">把DSR发群里的内容粘贴进来，点导入。</p>' +
+    '<textarea id="importText" style="width:100%;height:200px;border:1px solid #ddd;border-radius:6px;padding:8px;font-size:12px;font-family:monospace;"></textarea>' +
+    '<div class="btn-row">' +
+    '<button class="btn btn-primary" onclick="doImport()">导入</button>' +
+    '<button class="btn btn-secondary" onclick="document.getElementById(\'exportModal\').classList.remove(\'show\')">取消</button></div>';
+}
+function doImport() {
+  const text = document.getElementById('importText').value;
+  const lines = text.split('\n').filter(l => l.trim());
+  let dsrName='', distributor='';
+  for (const l of lines) {
+    if (l.startsWith('填写人：')) dsrName = l.replace('填写人：','').trim();
+    if (l.startsWith('经销商：')) distributor = l.replace('经销商：','').trim();
+  }
+  if (!dsrName || !distributor) { alert('无法解析，请确认是DSR提交的内容格式'); return; }
+  let start=false, imported=0;
+  const s = loadState();
+  const statusMap = {'已合作+已建档':1,'已合作+名不同':2,'已合作+未建档':3,'未合作+已建档':4,'未合作+未建档':5,'该店不存在':6};
+  for (const l of lines) {
+    if (l.includes('门店名称\t状态')) { start=true; continue; }
+    if (!start || !l.includes('\t')) continue;
+    if (l.startsWith('=====')) continue;
+    const parts = l.split('\t');
+    if (parts.length < 3) continue;
+    const name = parts[0].trim();
+    const status = statusMap[parts[1].trim()] || 0;
+    if (!status) continue;
+    const sysName = parts.length>2?parts[2].trim():'';
+    const sCode = parts.length>3?parts[3].trim():'';
+    const k = getKey(distributor, name);
+    s[k] = {status, sysName: sysName==='-'?'':sysName, sCode: sCode==='-'?'':sCode};
+    imported++;
+  }
+  if (!imported) { alert('没有找到可导入的数据'); return; }
+  saveState(s);
+  alert('成功导入 '+imported+' 条数据');
+  document.getElementById('exportModal').classList.remove('show');
+  render();
+}
 
 // Initial render
 render();
