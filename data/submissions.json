@@ -1,0 +1,14 @@
+[
+  {
+    "dsrName": "东哥测试",
+    "distributor": "杭州至胜",
+    "data": [
+      {
+        "name": "万马测试店",
+        "status": 1,
+        "sCode": "S001"
+      }
+    ],
+    "timestamp": "2026-06-19T09:06:27.989Z"
+  }
+]
