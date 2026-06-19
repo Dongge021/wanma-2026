@@ -84,7 +84,7 @@ body { font-family: -apple-system, "Microsoft YaHei", sans-serif; background: #f
 #addShopModal .status-btns label.selected .status-desc { color:inherit; }
 #addShopModal #scodeRow { display:none; }
 #addShopError { color:#f44336; font-size:13px; margin-bottom:8px; }
-@media(max-width:768px) { .card .options { width:100%; } #addShopModal .status-btns { flex-direction:column; } }
+@media(max-width:768px) { .card .options { width:100%; } }
 </style>
 </head>
 <body>
@@ -168,10 +168,9 @@ body { font-family: -apple-system, "Microsoft YaHei", sans-serif; background: #f
           <span class="status-desc">后续再补建档</span>
         </label>
       </div>
-    </div>
-    <div class="form-row" id="scodeRow">
-      <label>S编码 *</label>
-      <input id="newShopSCode" placeholder="输入S编码">
+      <div id="scodeRow" style="margin-top:8px;">
+        <input id="newShopSCode" placeholder="输入S编码" style="width:100%;">
+      </div>
     </div>
     <div id="addShopError"></div>
     <div class="btn-row" style="display:flex;gap:8px;justify-content:flex-end;">
@@ -581,6 +580,9 @@ function showAddShopModal() {
   const sel = document.getElementById('newShopDistrict');
   sel.innerHTML = '<option value="">请选择区域</option>' +
     Array.from(areaSet).sort().map(a => `<option value="${a}">${a}</option>`).join('');
+  // 自动带出筛选区域的当前值
+  const currentArea = document.getElementById('areaFilter').value;
+  if (currentArea) sel.value = currentArea;
   // 默认已建档
   selectNewShopStatus('archived');
 }
