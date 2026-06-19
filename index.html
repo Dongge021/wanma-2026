@@ -167,7 +167,8 @@ const CUSTOM_KEY = 'wanma_custom_shops';
 // 记录原始门店名，用于区分哪些是DSR自定义添加的
 const RAW_SHOP_NAMES = {};
 for (const dist of Object.keys(RAW)) {
-  RAW_SHOP_NAMES[dist] = new Set((RAW[dist] || []).map(s => s.name));
+  if (!Array.isArray(RAW[dist])) continue;
+  RAW_SHOP_NAMES[dist] = new Set(RAW[dist].map(s => s.name));
 }
 // 从localStorage加载自定义门店并合并到DATA
 (function loadCustomShops() {
