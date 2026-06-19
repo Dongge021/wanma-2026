@@ -56,6 +56,19 @@ body { font-family: -apple-system, "Microsoft YaHei", sans-serif; background: #f
 .modal-box pre { background:#f5f5f5; padding:12px; border-radius:6px; font-size:12px; overflow:auto; max-height:300px; }
 .modal-box .btn-row { display:flex; gap:8px; justify-content:flex-end; margin-top:12px; }
 .footer { text-align:center; padding:24px; color:#aaa; font-size:12px; }
+/* 添加新门店弹窗 */
+#addShopModal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.4); z-index:1000; justify-content:center; align-items:center; }
+#addShopModal.show { display:flex; }
+#addShopModal .modal-box { background:#fff; border-radius:12px; padding:24px; max-width:420px; width:90%; }
+#addShopModal .modal-box h3 { margin-bottom:16px; font-size:16px; }
+#addShopModal .form-row { margin-bottom:12px; }
+#addShopModal .form-row label { display:block; font-size:13px; color:#555; margin-bottom:4px; }
+#addShopModal .form-row input { width:100%; padding:8px 10px; border:1px solid #ddd; border-radius:6px; font-size:14px; box-sizing:border-box; }
+#addShopModal .form-row input:focus { outline:none; border-color:#e94560; }
+#addShopModal .status-options { display:flex; gap:16px; margin:12px 0; }
+#addShopModal .status-options label { display:flex; align-items:center; gap:6px; font-size:14px; cursor:pointer; }
+#addShopModal #scodeRow { display:none; }
+#addShopError { color:#f44336; font-size:13px; margin-bottom:8px; }
 @media(max-width:768px) { .card .options { width:100%; } }
 </style>
 </head>
@@ -92,12 +105,52 @@ body { font-family: -apple-system, "Microsoft YaHei", sans-serif; background: #f
   <button class="btn btn-secondary" onclick="clearAll()">清空当前列表</button>
   <button class="btn btn-primary" onclick="submitToAdmin()">提交给管理员</button>
   <button class="btn btn-secondary" onclick="showImport()">导入DSR数据</button>
+  <button class="btn btn-primary" onclick="showAddShopModal()" style="background:#2196f3;">+ 添加新门店</button>
 </div>
 
 <div class="stats" id="statsBar"></div>
 
 <div class="list" id="list"></div>
 <div id="exportModal"><div class="modal-box" id="exportContent"></div></div>
+<!-- 添加新门店弹窗 -->
+<div id="addShopModal">
+  <div class="modal-box">
+    <h3>➕ 添加新门店</h3>
+    <p style="font-size:13px;color:#888;margin-bottom:12px;">发现未在列表中的门店，可手动添加</p>
+    <div class="form-row">
+      <label>门店名称 *</label>
+      <input id="newShopName" placeholder="输入门店名称">
+    </div>
+    <div class="form-row">
+      <label>区域 *</label>
+      <input id="newShopDistrict" placeholder="如：萧山区、越城区">
+    </div>
+    <div class="form-row">
+      <label>地址</label>
+      <input id="newShopAddr" placeholder="详细地址（选填）">
+    </div>
+    <div class="form-row">
+      <label>电话</label>
+      <input id="newShopTel" placeholder="联系电话（选填）">
+    </div>
+    <div class="form-row">
+      <label>建档状态</label>
+      <div class="status-options">
+        <label><input type="radio" name="newShopStatus" value="archived" checked onchange="onNewShopStatusChange('archived')"> 已建档（有S编码）</label>
+        <label><input type="radio" name="newShopStatus" value="unfiled" onchange="onNewShopStatusChange('unfiled')"> 未建档</label>
+      </div>
+    </div>
+    <div class="form-row" id="scodeRow">
+      <label>S编码 *</label>
+      <input id="newShopSCode" placeholder="输入S编码">
+    </div>
+    <div id="addShopError"></div>
+    <div class="btn-row" style="display:flex;gap:8px;justify-content:flex-end;">
+      <button class="btn btn-secondary" onclick="document.getElementById('addShopModal').classList.remove('show')">取消</button>
+      <button class="btn btn-primary" onclick="saveNewShop()" style="background:#2196f3;">确认添加</button>
+    </div>
+  </div>
+</div>
 <div class="footer">数据保存在浏览器本地 localStorage，关闭页面不会丢失</div>
 
 <script>
@@ -109,6 +162,40 @@ const RAW = {"杭州至胜": [{"name": "专修依维柯", "city": "杭州市", "
 
 
 const DATA = RAW;
+// ============== 自定义门店持久化 ==============
+const CUSTOM_KEY = 'wanma_custom_shops';
+// 记录原始门店名，用于区分哪些是DSR自定义添加的
+const RAW_SHOP_NAMES = {};
+for (const dist of Object.keys(RAW)) {
+  RAW_SHOP_NAMES[dist] = new Set((RAW[dist] || []).map(s => s.name));
+}
+// 从localStorage加载自定义门店并合并到DATA
+(function loadCustomShops() {
+  try {
+    const raw = localStorage.getItem(CUSTOM_KEY);
+    if (!raw) return;
+    const custom = JSON.parse(raw);
+    for (const [dist, shops] of Object.entries(custom)) {
+      if (!DATA[dist]) DATA[dist] = [];
+      shops.forEach(shop => {
+        if (!DATA[dist].find(s => s.name === shop.name)) {
+          DATA[dist].push(shop);
+        }
+      });
+    }
+  } catch(e) {}
+})();
+// 将自定义门店保存到localStorage（对比原始数据，只存新增的）
+function saveCustomShops() {
+  const custom = {};
+  for (const [dist, shops] of Object.entries(DATA)) {
+    const rawNames = RAW_SHOP_NAMES[dist];
+    if (!rawNames) continue;
+    const added = shops.filter(s => !rawNames.has(s.name));
+    if (added.length > 0) custom[dist] = added;
+  }
+  localStorage.setItem(CUSTOM_KEY, JSON.stringify(custom));
+}
 let currentTab = 0;
 
 // Load saved state from localStorage
@@ -253,11 +340,16 @@ function setField(dist, name, field, val) {
 
 function clearAll() {
   const distName = ['杭州至胜', '浙江佳贝涵'][currentTab];
-  if (!confirm(`确定清空${distName}当前列表的所有确认状态？`)) return;
+  if (!confirm(`确定清空${distName}当前列表的所有确认状态？（自定义添加的门店也将被移除）`)) return;
   const shops = DATA[distName] || [];
   const s = loadState();
   shops.forEach(shop => { delete s[getKey(distName, shop.name)]; });
   saveState(s);
+  // 移除自定义门店（只保留原始列表中的门店）
+  if (RAW_SHOP_NAMES[distName]) {
+    DATA[distName] = DATA[distName].filter(shop => RAW_SHOP_NAMES[distName].has(shop.name));
+  }
+  saveCustomShops();
   render();
 }
 
@@ -439,6 +531,57 @@ function doImport() {
   saveState(s);
   alert('成功导入 '+imported+' 条数据');
   document.getElementById('exportModal').classList.remove('show');
+  render();
+}
+
+// ============== 添加新门店 ==============
+function showAddShopModal() {
+  document.getElementById('addShopModal').classList.add('show');
+  document.getElementById('newShopName').value = '';
+  document.getElementById('newShopDistrict').value = '';
+  document.getElementById('newShopAddr').value = '';
+  document.getElementById('newShopTel').value = '';
+  document.getElementById('newShopSCode').value = '';
+  document.getElementById('addShopError').textContent = '';
+  document.querySelector('input[name="newShopStatus"][value="archived"]').checked = true;
+  document.getElementById('scodeRow').style.display = 'block';
+}
+function onNewShopStatusChange(val) {
+  document.getElementById('scodeRow').style.display = val === 'archived' ? 'block' : 'none';
+}
+function saveNewShop() {
+  const distName = ['杭州至胜', '浙江佳贝涵'][currentTab];
+  const name = document.getElementById('newShopName').value.trim();
+  const district = document.getElementById('newShopDistrict').value.trim();
+  const addr = document.getElementById('newShopAddr').value.trim();
+  const tel = document.getElementById('newShopTel').value.trim();
+  const statusRadio = document.querySelector('input[name="newShopStatus"]:checked');
+  if (!statusRadio) return;
+  if (!name) { document.getElementById('addShopError').textContent = '请填写门店名称'; return; }
+  if (!district) { document.getElementById('addShopError').textContent = '请填写区域'; return; }
+  // 检查是否已存在
+  if (DATA[distName].find(s => s.name === name)) {
+    document.getElementById('addShopError').textContent = '该门店已存在列表中';
+    return;
+  }
+  const statusVal = statusRadio.value;
+  let status, sCode;
+  if (statusVal === 'archived') {
+    sCode = document.getElementById('newShopSCode').value.trim();
+    if (!sCode) { document.getElementById('addShopError').textContent = '请填写S编码'; return; }
+    status = 1; // 已合作+已建档
+  } else {
+    sCode = '';
+    status = 3; // 已合作+未建档
+  }
+  // 添加到DATA
+  const newShop = { name, city: district, district, task: '自定义', addr, tel, note: 'DSR新增' };
+  DATA[distName].push(newShop);
+  // 设置状态
+  setState(distName, name, status, '', sCode);
+  // 保存自定义门店列表
+  saveCustomShops();
+  document.getElementById('addShopModal').classList.remove('show');
   render();
 }
 
