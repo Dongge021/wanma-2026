@@ -348,6 +348,8 @@ document.getElementById('areaFilter').addEventListener('change', render);
 document.getElementById('statusFilter').addEventListener('change', render);
 
 // Submit & Import
+const API_URL = 'https://wanma-server.onrender.com';
+
 function submitToAdmin() {
   const dsrName = document.getElementById('dsrName').value;
   if (!dsrName) { alert('请先在顶部填写姓名'); return; }
@@ -360,23 +362,33 @@ function submitToAdmin() {
     const k = getKey(distName, shop.name);
     const st = s[k] || {status:0};
     if (st.status === 0) return;
-    rows.push({name:shop.name,area:shop.district||shop.city,addr:shop.addr||'',tel:shop.tel||'',
-      statusText:statusMap[st.status]||'未确认',sysName:st.sysName||'',sCode:st.sCode||''});
+    rows.push({
+      name:shop.name, area:shop.district||shop.city, addr:shop.addr||'', tel:shop.tel||'',
+      status:st.status, statusText:statusMap[st.status], sysName:st.sysName||'', sCode:st.sCode||''
+    });
   });
   if (rows.length === 0) { alert('还没有确认任何门店'); return; }
-  let text = '===== 万马奔腾提交 =====\n';
-  text += '填写人：' + dsrName + '\n经销商：' + distName + '\n';
-  text += '确认时间：' + new Date().toLocaleString() + '\n';
-  text += '确认数：' + rows.length + '/' + shops.length + '\n\n';
-  text += '门店名称\t状态\t系统内名称\tS编码\n';
-  rows.forEach(r => {
-    text += r.name + '\t' + r.statusText + '\t' + (r.sysName||'-') + '\t' + (r.sCode||'-') + '\n';
-  });
-  text += '===== 结束 =====';
-  navigator.clipboard.writeText(text).then(() => {
-    alert('已复制！请粘贴到微信群发给管理员。');
-  }).catch(() => {
-    prompt('请复制以下内容发给管理员：', text);
+
+  const btn = event.target;
+  btn.disabled = true; btn.textContent = '提交中...';
+
+  fetch(API_URL + '/api/submit', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      dsrName, distributor: distName,
+      data: rows, timestamp: new Date().toISOString()
+    })
+  }).then(r => r.json()).then(res => {
+    if (res.ok) {
+      alert('提交成功！管理员可查看后台。\n后台地址：' + API_URL + '/admin');
+    } else {
+      alert('提交失败：' + (res.msg || '未知错误'));
+    }
+  }).catch(e => {
+    alert('提交失败：' + e.message + '\n请检查网络后重试');
+  }).finally(() => {
+    btn.disabled = false; btn.textContent = '提交给管理员';
   });
 }
 
