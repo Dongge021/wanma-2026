@@ -491,7 +491,8 @@ function submitToAdmin() {
     if (st.status === 0) return;
     rows.push({
       name:shop.name, area:shop.district||shop.city, addr:shop.addr||'', tel:shop.tel||'',
-      status:st.status, statusText:statusMap[st.status], sysName:st.sysName||'', sCode:st.sCode||''
+      status:st.status, statusText:statusMap[st.status], sysName:st.sysName||'', sCode:st.sCode||'',
+      isNew: shop.note && shop.note.includes('新增') ? 1 : 0
     });
   });
   if (rows.length === 0) { alert('还没有确认任何门店'); return; }
