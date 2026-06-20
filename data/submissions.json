@@ -23,7 +23,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "舟山市新奥汽车维修服务有限公司",
@@ -33,7 +34,8 @@
         "status": 3,
         "statusText": "已合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "舟山市远驰汽车维修有限公司",
@@ -43,7 +45,8 @@
         "status": 4,
         "statusText": "未合作+已建档",
         "sysName": "",
-        "sCode": "S967745"
+        "sCode": "S967745",
+        "isNew": 0
       },
       {
         "name": "久尚汽车服务",
@@ -53,7 +56,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "乾坤汽车维修养护中心(盐仓店)",
@@ -63,7 +67,8 @@
         "status": 4,
         "statusText": "未合作+已建档",
         "sysName": "",
-        "sCode": "S1777670"
+        "sCode": "S1777670",
+        "isNew": 0
       },
       {
         "name": "友嘉汽车美容装饰",
@@ -73,7 +78,8 @@
         "status": 4,
         "statusText": "未合作+已建档",
         "sysName": "",
-        "sCode": "S1470589"
+        "sCode": "S1470589",
+        "isNew": 0
       },
       {
         "name": "合诚汽修",
@@ -83,7 +89,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "嘉实多舟山市定海区欣飞汽车维修中心",
@@ -93,7 +100,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "壳牌喜力(车粒方汽车快修)",
@@ -103,7 +111,8 @@
         "status": 1,
         "statusText": "已合作+已建档",
         "sysName": "",
-        "sCode": "S1536366"
+        "sCode": "S1536366",
+        "isNew": 0
       },
       {
         "name": "定海宏九汽车修理有限公司",
@@ -113,7 +122,8 @@
         "status": 4,
         "statusText": "未合作+已建档",
         "sysName": "",
-        "sCode": "S1454933"
+        "sCode": "S1454933",
+        "isNew": 0
       },
       {
         "name": "宝格汽修服务(舟山宝马专修店)",
@@ -123,7 +133,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "小徐汽车轮胎维修店",
@@ -133,7 +144,8 @@
         "status": 7,
         "statusText": "客户在&非目标",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "德国马牌和兴汽车美容(兴舟大道店)",
@@ -143,7 +155,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "新奥名车奔驰宝马奥迪保时捷专修连锁",
@@ -153,7 +166,8 @@
         "status": 3,
         "statusText": "已合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "旭驰名车专修",
@@ -163,7 +177,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "旭驰名车专修服务有限公司",
@@ -173,7 +188,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "明日之星汽车维修",
@@ -183,7 +199,8 @@
         "status": 3,
         "statusText": "已合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "星航汽车一站式服务",
@@ -193,7 +210,8 @@
         "status": 1,
         "statusText": "已合作+已建档",
         "sysName": "",
-        "sCode": "S1568805"
+        "sCode": "S1568805",
+        "isNew": 0
       },
       {
         "name": "杨波汽车服务",
@@ -203,7 +221,8 @@
         "status": 3,
         "statusText": "已合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "正鑫汽车维修中心",
@@ -213,7 +232,8 @@
         "status": 1,
         "statusText": "已合作+已建档",
         "sysName": "",
-        "sCode": "S1111353"
+        "sCode": "S1111353",
+        "isNew": 0
       },
       {
         "name": "汽管严汽车生活馆(临城店)",
@@ -223,7 +243,8 @@
         "status": 1,
         "statusText": "已合作+已建档",
         "sysName": "",
-        "sCode": "S866888"
+        "sCode": "S866888",
+        "isNew": 0
       },
       {
         "name": "汽车凹陷修复玻璃修复",
@@ -233,7 +254,8 @@
         "status": 7,
         "statusText": "客户在&非目标",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "浙江地势坤汽车修理有限公司",
@@ -243,7 +265,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "润风汽车服务",
@@ -253,7 +276,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "爱车管家汽车维修中心",
@@ -263,7 +287,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "现代专修",
@@ -273,7 +298,8 @@
         "status": 3,
         "statusText": "已合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "美孚1号车养护(晓刘汽车快修店)",
@@ -283,7 +309,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "舟山佳艺汽车音响导航改装维修店",
@@ -293,7 +320,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "舟山兄弟汽车销售有限公司",
@@ -303,7 +331,8 @@
         "status": 3,
         "statusText": "已合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "舟山合欣汽修有限公司",
@@ -313,7 +342,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "舟山宏盈汽车服务有限公司",
@@ -323,7 +353,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "舟山定海昌弘汽车修理厂",
@@ -333,7 +364,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "舟山定海韵达汽车维修有限公司",
@@ -343,7 +375,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "舟山市万顺汽车维修有限公司",
@@ -353,7 +386,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "舟山市新城博驰汽车维修服务中心",
@@ -363,7 +397,8 @@
         "status": 1,
         "statusText": "已合作+已建档",
         "sysName": "",
-        "sCode": "S085660"
+        "sCode": "S085660",
+        "isNew": 0
       },
       {
         "name": "舟山市新城舟车汇汽车维修服务部",
@@ -373,7 +408,8 @@
         "status": 1,
         "statusText": "已合作+已建档",
         "sysName": "",
-        "sCode": "S1081709"
+        "sCode": "S1081709",
+        "isNew": 0
       },
       {
         "name": "舟山市新城顺利汽修",
@@ -383,7 +419,8 @@
         "status": 1,
         "statusText": "已合作+已建档",
         "sysName": "",
-        "sCode": "S1363968"
+        "sCode": "S1363968",
+        "isNew": 0
       },
       {
         "name": "舟山市新城驰诚汽车修理厂",
@@ -393,7 +430,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "舟山市新泰汽车维修有限公司",
@@ -403,7 +441,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "舟山市金塘骏腾汽车维修服务中心(和建路)",
@@ -413,7 +452,8 @@
         "status": 1,
         "statusText": "已合作+已建档",
         "sysName": "",
-        "sCode": "S1055522"
+        "sCode": "S1055522",
+        "isNew": 0
       },
       {
         "name": "舟山旭驰汽车维修",
@@ -423,7 +463,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "舟山润达汽车维修有限公司",
@@ -433,7 +474,8 @@
         "status": 3,
         "statusText": "已合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "舟山腾骅汽车修理服务部(专修自动变速箱)",
@@ -443,7 +485,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "舟山远驰汽修",
@@ -453,7 +496,8 @@
         "status": 1,
         "statusText": "已合作+已建档",
         "sysName": "",
-        "sCode": "S1568279"
+        "sCode": "S1568279",
+        "isNew": 0
       },
       {
         "name": "超旺汽车维修服务站",
@@ -463,7 +507,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "路易行汽车服务",
@@ -473,7 +518,8 @@
         "status": 1,
         "statusText": "已合作+已建档",
         "sysName": "",
-        "sCode": "S302767"
+        "sCode": "S302767",
+        "isNew": 0
       },
       {
         "name": "车之驿汽车维修改装保养钣金喷漆",
@@ -483,7 +529,8 @@
         "status": 1,
         "statusText": "已合作+已建档",
         "sysName": "",
-        "sCode": "S672990"
+        "sCode": "S672990",
+        "isNew": 0
       },
       {
         "name": "车匠一体式汽车美容工坊",
@@ -493,7 +540,8 @@
         "status": 6,
         "statusText": "无门店&已倒闭",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "车盈门汽车会所(金岛路店)",
@@ -503,7 +551,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "车鲁班汽车养护",
@@ -513,7 +562,8 @@
         "status": 1,
         "statusText": "已合作+已建档",
         "sysName": "",
-        "sCode": "S1202302"
+        "sCode": "S1202302",
+        "isNew": 0
       },
       {
         "name": "阿轩汽车快修部",
@@ -523,7 +573,8 @@
         "status": 3,
         "statusText": "已合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "鸿海汽车美容",
@@ -533,7 +584,8 @@
         "status": 3,
         "statusText": "已合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "7KM潮流养车(海丝未来店)",
@@ -543,7 +595,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "佑凡汽车一站式服务",
@@ -553,7 +606,8 @@
         "status": 3,
         "statusText": "已合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "小二汽车维修店",
@@ -563,7 +617,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "广艺汽车养护美容会所",
@@ -573,7 +628,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "承鑫汽车服务部(舟山宝马专修店)",
@@ -583,17 +639,19 @@
         "status": 1,
         "statusText": "已合作+已建档",
         "sysName": "",
-        "sCode": "S1241044"
+        "sCode": "S1241044",
+        "isNew": 0
       },
       {
         "name": "新城车饰(海莲路店)",
         "area": "普陀区",
         "addr": "浙江省舟山市普陀区东港街道海莲路482-488号",
         "tel": "13506806567",
-        "status": 5,
-        "statusText": "未合作+未建档",
+        "status": 6,
+        "statusText": "无门店&已倒闭",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "普陀区李帅汽修",
@@ -603,7 +661,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "景翔汽车服务中心",
@@ -613,17 +672,19 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "欣池汽车服务站",
         "area": "普陀区",
         "addr": "浙江省舟山市普陀区东港街道海印路877号",
         "tel": "17705803389",
-        "status": 5,
-        "statusText": "未合作+未建档",
+        "status": 6,
+        "statusText": "无门店&已倒闭",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "泓宇汽车美容修理.奔驰专修",
@@ -633,7 +694,8 @@
         "status": 1,
         "statusText": "已合作+已建档",
         "sysName": "",
-        "sCode": "S1507772"
+        "sCode": "S1507772",
+        "isNew": 0
       },
       {
         "name": "老金汽车快修(原创达快修有车生活)(维修补胎换胎钣金喷漆)",
@@ -643,7 +705,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "舟山市普陀永兴汽车修配厂",
@@ -653,7 +716,8 @@
         "status": 4,
         "statusText": "未合作+已建档",
         "sysName": "",
-        "sCode": "S1909498"
+        "sCode": "S1909498",
+        "isNew": 0
       },
       {
         "name": "阿杜汽车维修",
@@ -663,7 +727,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "专修铲车",
@@ -673,7 +738,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "岱山安风汽车修理厂",
@@ -683,7 +749,8 @@
         "status": 1,
         "statusText": "已合作+已建档",
         "sysName": "",
-        "sCode": "S1665186"
+        "sCode": "S1665186",
+        "isNew": 0
       },
       {
         "name": "汽车电瓶马达空调发电机",
@@ -693,7 +760,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "车敏靓汽车维修美容服务中心",
@@ -703,7 +771,8 @@
         "status": 5,
         "statusText": "未合作+未建档",
         "sysName": "",
-        "sCode": ""
+        "sCode": "",
+        "isNew": 0
       },
       {
         "name": "舟山市定海区车美佳汽车美容店",
@@ -713,7 +782,8 @@
         "status": 1,
         "statusText": "已合作+已建档",
         "sysName": "",
-        "sCode": "S998761"
+        "sCode": "S998761",
+        "isNew": 1
       },
       {
         "name": "舟山市定海区车易新汽车美容会所",
@@ -723,7 +793,8 @@
         "status": 1,
         "statusText": "已合作+已建档",
         "sysName": "",
-        "sCode": "S499369"
+        "sCode": "S499369",
+        "isNew": 1
       },
       {
         "name": "舟山市定海区思泉洗车店",
@@ -733,7 +804,8 @@
         "status": 1,
         "statusText": "已合作+已建档",
         "sysName": "",
-        "sCode": "S1692958"
+        "sCode": "S1692958",
+        "isNew": 1
       },
       {
         "name": "舟山市擎睿汽车服务部",
@@ -743,7 +815,8 @@
         "status": 1,
         "statusText": "已合作+已建档",
         "sysName": "",
-        "sCode": "1656673"
+        "sCode": "1656673",
+        "isNew": 1
       },
       {
         "name": "舟山市普陀区鑫奥汽车修理服务部",
@@ -753,10 +826,11 @@
         "status": 1,
         "statusText": "已合作+已建档",
         "sysName": "",
-        "sCode": "S1233035"
+        "sCode": "S1233035",
+        "isNew": 1
       }
     ],
-    "timestamp": "2026-06-20T02:16:59.535Z"
+    "timestamp": "2026-06-20T03:56:08.042Z"
   },
   {
     "dsrName": "最终校验",
